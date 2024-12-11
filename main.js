@@ -58,6 +58,8 @@ async function loadPersonalData() {
     personalData.facebookPosts = await loadCSV('/facebook.csv');
     personalData.linkedinPosts = await loadCSV('/linkedin.csv');
     personalData.biodata = await loadText('/biodata.txt');
+
+    console.log(personalData.tweets)
   } catch (error) {
     console.error("Error loading personal data:", error);
   }
@@ -108,22 +110,17 @@ async function generateResponse(userPrompt) {
   ${personalData.biodata}
 
   Recent Social Media Context:
-  Tweets: ${personalData.tweets.slice(0, 50).map(t => t.TweetText).join(' | ')}
-  Tweets2: ${personalData.tweets.slice(51, 100).map(t => t.TweetText).join(' | ')}
-  Tweets3: ${personalData.tweets.slice(150, 200).map(t => t.TweetText).join(' | ')}
-  Tweets4: ${personalData.tweets.slice(201, 250).map(t => t.TweetText).join(' | ')}
-  Tweets5: ${personalData.tweets.slice(251, 300).map(t => t.TweetText).join(' | ')}
-  Tweets6: ${personalData.tweets.slice(301, 350).map(t => t.TweetText).join(' | ')}
-  Tweets7: ${personalData.tweets.slice(351, 400).map(t => t.TweetText).join(' | ')}
-  Tweets: ${personalData.tweets.slice(401, 450).map(t => t.TweetText).join(' | ')}
-  Tweets2: ${personalData.tweets.slice(451, 500).map(t => t.TweetText).join(' | ')}
-  Tweets3: ${personalData.tweets.slice(501, 550).map(t => t.TweetText).join(' | ')}
-  Tweets4: ${personalData.tweets.slice(551, 600).map(t => t.TweetText).join(' | ')}
-  Tweets5: ${personalData.tweets.slice(601, 650).map(t => t.TweetText).join(' | ')}
-  Tweets6: ${personalData.tweets.slice(651, 700).map(t => t.TweetText).join(' | ')}
-  Tweets7: ${personalData.tweets.slice(701, 750).map(t => t.TweetText).join(' | ')}
+  Tweets: ${personalData.tweets.slice(0, 100).map(t => t.TweetText).join(' | ')}
+  Tweets2: ${personalData.tweets.slice(101, 200).map(t => t.TweetText).join(' | ')}
+  Tweets3: ${personalData.tweets.slice(201, 300).map(t => t.TweetText).join(' | ')}
+  Tweets4: ${personalData.tweets.slice(301, 400).map(t => t.TweetText).join(' | ')}
+  Tweets5: ${personalData.tweets.slice(401, 500).map(t => t.TweetText).join(' | ')}
+  Tweets6: ${personalData.tweets.slice(501, 600).map(t => t.TweetText).join(' | ')}
+  Tweets7: ${personalData.tweets.slice(601, 700).map(t => t.TweetText).join(' | ')}
   Tweets8: ${personalData.tweets.slice(900, 950).map(t => t.TweetText).join(' | ')}
   Tweets8: ${personalData.tweets.slice(1101, 1150).map(t => t.TweetText).join(' | ')}
+  Tweets8: ${personalData.tweets.slice(1201, 1250).map(t => t.TweetText).join(' | ')}
+  
   Facebook Posts: ${personalData.facebookPosts.map(p => p.Content).join(' | ')}
   LinkedIn Posts: ${personalData.linkedinPosts.map(p => p.postText).join(' | ')}
 
@@ -208,7 +205,10 @@ async function initApp() {
   await loadPersonalData();
 
   // Create an introduction message based on biodata
-  const introductionMessage = `Hello! I’m Jack Jay. How can I help you?`;
+  const introductionMessage = `Hello! I’m Jack Jay. How can I help you? 
+  [  If you're getting the message "I'm having trouble processing your message right now," 
+  it may be due to the free API experiencing high data loads or temporary unavailability. 
+  You can try refreshing the page to ask again.]`;
 
   // Display the introduction message in the chat
   const chatContainer = document.getElementById('chat-container');
