@@ -7,39 +7,42 @@ const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 let history = [];
 
-// Load personal data (tweets, Facebook posts, biodata, LinkedIn)
+// Function to load CSV files (replace this with your actual implementation)
 async function loadCSV(filePath) {
   const response = await fetch(filePath);
-  const text = await response.text();
-  const rows = text.split("\n").slice(1); // Skip header row
-  const data = rows.map(row => row.split(","));
-  return data;
+  return await response.text(); // Assuming CSV is in plain text format
 }
 
+// Function to load text files (replace this with your actual implementation)
 async function loadText(filePath) {
   const response = await fetch(filePath);
-  const text = await response.text();
-  return text.trim();
+  return await response.text(); // Assuming TXT is in plain text format
 }
 
-let tweets = await loadCSV('tweets.csv');
-let facebookPosts = await loadCSV('facebook.csv');
-let biodata = await loadText('biodata.txt');
-let linkedin = await loadCSV('linkedin.csv');
+// Function to load data asynchronously
+async function loadData() {
+  try {
+    let tweets = await loadCSV('tweets.csv');
+    let facebookPosts = await loadCSV('facebook.csv');
+    let biodata = await loadText('biodata.txt');
+    let linkedin = await loadCSV('linkedin.csv');
 
-// Preprocess the data to reflect your communication style
-const userStyle = {
-  tweets: tweets.slice(0, 5).map(tweet => tweet[1]).join(" "),
-  facebookPosts: facebookPosts.slice(0, 5).map(post => post[1]).join(" "),
-  biodata: biodata,
-  linkedin: linkedin.slice(0, 5).map(info => info[1]).join(" ")
-};
+    console.log("Tweets:", tweets);
+    console.log("Facebook Posts:", facebookPosts);
+    console.log("Biodata:", biodata);
+    console.log("LinkedIn Data:", linkedin);
+  } catch (error) {
+    console.error("Error loading data:", error);
+  }
+}
 
+// Call loadData to fetch the files
+loadData();
+
+// Function to get AI response
 async function getResponse(prompt) {
-  const userContext = `The user communicates like this: ${userStyle.tweets} ${userStyle.facebookPosts} ${userStyle.linkedin} ${userStyle.biodata}`;
-
   const chat = await model.startChat({ history: history });
-  const result = await chat.sendMessage(userContext + " " + prompt);
+  const result = await chat.sendMessage(prompt);
   const response = await result.response;
   const text = response.text();
 
@@ -47,25 +50,27 @@ async function getResponse(prompt) {
   return text;
 }
 
+// user chat div
 export const userDiv = (data) => {
   return `
-    <div class="flex items-center gap-2 justify-start">
-      <img src="user.jpg" alt="user icon" class="w-10 h-10 rounded-full" />
-      <p class="bg-gemDeep text-white p-1 rounded-md shadow-md">
-        ${data}
-      </p>
-    </div>
+  <!-- User Chat -->
+  <div class="flex items-center gap-2 justify-start">
+    <img src="user.jpg" alt="user icon" class="w-10 h-10 rounded-full" />
+    <p class="bg-gemDeep text-white p-1 rounded-md shadow-md">${data}</p>
+  </div>
   `;
 };
 
+// AI chat div
 export const aiDiv = (data) => {
   return `
-    <div class="flex gap-2 justify-end">
-      <pre class="bg-gemRegular/40 text-gemDeep p-1 rounded-md shadow-md whitespace-pre-wrap">
-        ${data}
-      </pre>
-      <img src="chat-bot.jpg" alt="user icon" class="w-10 h-10 rounded-full" />
-    </div>
+  <!-- AI Chat -->
+  <div class="flex gap-2 justify-end">
+    <pre class="bg-gemRegular/40 text-gemDeep p-1 rounded-md shadow-md whitespace-pre-wrap">
+      ${data}
+    </pre>
+    <img src="chat-bot.jpg" alt="chat-bot icon" class="w-10 h-10 rounded-full" />
+  </div>
   `;
 };
 
@@ -90,7 +95,7 @@ async function handleSubmit(event) {
 
   let newUserRole = {
     role: "user",
-    parts: `${userStyle.tweets} ${userStyle.facebookPosts} ${userStyle.linkedin} ${userStyle.biodata} ${prompt}`,
+    parts: prompt,
   };
   let newAIRole = {
     role: "model",
