@@ -59,7 +59,6 @@ async function loadPersonalData() {
     personalData.linkedinPosts = await loadCSV('/linkedin.csv');
     personalData.biodata = await loadText('/biodata.txt');
 
-    console.log(personalData.tweets)
   } catch (error) {
     console.error("Error loading personal data:", error);
   }
@@ -113,10 +112,6 @@ async function generateResponse(userPrompt) {
   Tweets: ${personalData.tweets.slice(0, 100).map(t => t.TweetText).join(' | ')}
   Tweets2: ${personalData.tweets.slice(101, 200).map(t => t.TweetText).join(' | ')}
   Tweets3: ${personalData.tweets.slice(201, 300).map(t => t.TweetText).join(' | ')}
-  Tweets4: ${personalData.tweets.slice(301, 400).map(t => t.TweetText).join(' | ')}
-  Tweets5: ${personalData.tweets.slice(401, 500).map(t => t.TweetText).join(' | ')}
-  Tweets6: ${personalData.tweets.slice(501, 600).map(t => t.TweetText).join(' | ')}
-  Tweets7: ${personalData.tweets.slice(601, 700).map(t => t.TweetText).join(' | ')}
   Tweets8: ${personalData.tweets.slice(900, 950).map(t => t.TweetText).join(' | ')}
   Tweets8: ${personalData.tweets.slice(1101, 1150).map(t => t.TweetText).join(' | ')}
   Tweets8: ${personalData.tweets.slice(1201, 1250).map(t => t.TweetText).join(' | ')}
