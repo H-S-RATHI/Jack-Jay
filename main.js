@@ -203,7 +203,7 @@ async function initApp() {
   const introductionMessage = `Hello! I’m Jack Jay. How can I help you? 
   [  If you're getting the message "I'm having trouble processing your message right now," 
   it may be due to the free API experiencing high data loads or temporary unavailability. 
-  You can try refreshing the page to ask again.]`;
+  You can try refreshing the page to ask again or wait one min.]`;
 
   // Display the introduction message in the chat
   const chatContainer = document.getElementById('chat-container');
