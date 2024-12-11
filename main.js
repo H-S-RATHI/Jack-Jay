@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import md from "markdown-it";
+import Papa from "papaparse";  // Make sure to install the papaparse library to parse CSV files
 
 // Initialize the model
 const genAI = new GoogleGenerativeAI(`${import.meta.env.VITE_API_KEY}`);
@@ -7,25 +8,40 @@ const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 let history = [];
 
-// Function to load CSV files (replace this with your actual implementation)
+// Function to load CSV files (parse CSV into an array of objects)
 async function loadCSV(filePath) {
   const response = await fetch(filePath);
-  return await response.text(); // Assuming CSV is in plain text format
+  const text = await response.text();
+  return new Promise((resolve, reject) => {
+    Papa.parse(text, {
+      header: true,
+      dynamicTyping: true,
+      complete: (result) => resolve(result.data),
+      error: (error) => reject(error),
+    });
+  });
 }
 
-// Function to load text files (replace this with your actual implementation)
+// Function to load text files (plain text)
 async function loadText(filePath) {
   const response = await fetch(filePath);
-  return await response.text(); // Assuming TXT is in plain text format
+  return await response.text();
 }
+
+// Variables to store the data from files
+let tweets = [];
+let facebookPosts = [];
+let biodata = "";
+let linkedin = [];
 
 // Function to load data asynchronously
 async function loadData() {
   try {
-    let tweets = await loadCSV('tweets.csv');
-    let facebookPosts = await loadCSV('facebook.csv');
-    let biodata = await loadText('biodata.txt');
-    let linkedin = await loadCSV('linkedin.csv');
+    // Update paths to refer to the 'public' folder
+    tweets = await loadCSV('/tweets.csv');
+    facebookPosts = await loadCSV('/facebook.csv');
+    biodata = await loadText('/biodata.txt');
+    linkedin = await loadCSV('/linkedin.csv');
 
     console.log("Tweets:", tweets);
     console.log("Facebook Posts:", facebookPosts);
@@ -41,8 +57,32 @@ loadData();
 
 // Function to get AI response
 async function getResponse(prompt) {
+  let enrichedPrompt = prompt;
+
+  // Check for specific keywords and enhance the prompt accordingly
+  if (prompt.toLowerCase().includes("tweet")) {
+    enrichedPrompt += ` Here are some tweets I posted: ${tweets.map(t => t.text).join(", ")}`;
+  }
+  if (prompt.toLowerCase().includes("facebook")) {
+    enrichedPrompt += ` Here are some of my Facebook posts: ${facebookPosts.map(f => f.post).join(", ")}`;
+  }
+  if (prompt.toLowerCase().includes("bio")) {
+    enrichedPrompt += ` Here is my biodata: ${biodata}`;
+  }
+  if (prompt.toLowerCase().includes("linkedin")) {
+    enrichedPrompt += ` Here is my LinkedIn info: ${linkedin.map(l => l.job).join(", ")}`;
+  }
+
+  // Send the enriched prompt to the AI model
   const chat = await model.startChat({ history: history });
-  const result = await chat.sendMessage(prompt);
+  const result = await chat.sendMessage(enrichedPrompt);
+  
+  // Handle potential errors in response
+  if (!result || !result.response) {
+    console.error("No response from AI model.");
+    return "I'm having trouble finding an answer right now.";
+  }
+
   const response = await result.response;
   const text = response.text();
 
