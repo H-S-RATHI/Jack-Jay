@@ -78,47 +78,52 @@ function createUserMessage(message) {
   `;
 }
 
-function createAIMessage(message) {
-  return `
-  <div class="flex gap-2 justify-end items-start">
-    <pre class="bg-gemRegular/40 text-gemDeep p-2 rounded-md shadow-md whitespace-pre-wrap max-w-[80%]">
-      ${message}
-    </pre>
-    <img src="chat-bot.jpg" alt="chatbot icon" class="w-10 h-10 rounded-full" />
-  </div>
-  `;
+function createAIMessageContainer() {
+  const container = document.createElement("div");
+  container.classList.add("flex", "gap-2", "justify-end", "items-start");
+
+  const preElement = document.createElement("pre");
+  preElement.classList.add("bg-gemRegular/40", "text-gemDeep", "p-2", "rounded-md", "shadow-md", "whitespace-pre-wrap", "max-w-[80%]");
+  container.appendChild(preElement);
+
+  const imgElement = document.createElement("img");
+  imgElement.src = "jack.webp";
+  imgElement.alt = "jack image";
+  imgElement.classList.add("w-10", "h-10", "rounded-full");
+  container.appendChild(imgElement);
+
+  return { container, preElement };
 }
 
 // AI Response Generation
 async function generateResponse(userPrompt) {
-  // Construct context from personal data
   const context = `
-Persona Details:
-Name: ${PERSONA.name}
-Communication Style: ${PERSONA.communication_style}
+  Persona Details:
+  Name: ${PERSONA.name}
+  Communication Style: ${PERSONA.communication_style}
 
-Personal Background:
-${personalData.biodata}
+  Personal Background:
+  ${personalData.biodata}
 
-Recent Social Media Context:
-Tweets: ${personalData.tweets.slice(0, 100).map(t => t.TweetText).join(' | ')}
-Tweets2: ${personalData.tweets.slice(100, 200).map(t => t.TweetText).join(' | ')}
-Facebook Posts: ${personalData.facebookPosts.map(p => p.Content).join(' | ')}
-LinkedIn Posts: ${personalData.linkedinPosts.map(p => p.postText).join(' | ')}
+  Recent Social Media Context:
+  Tweets: ${personalData.tweets.slice(0, 100).map(t => t.TweetText).join(' | ')}
+  Facebook Posts: ${personalData.facebookPosts.map(p => p.Content).join(' | ')}
+  LinkedIn Posts: ${personalData.linkedinPosts.map(p => p.postText).join(' | ')}
 
-Conversation History: ${conversationHistory.map(h => h.role + ': ' + h.content).join('\n')}
+  Conversation History: ${conversationHistory.map(h => h.role + ': ' + h.content).join('\n')}
 
-User's Current Prompt: "${userPrompt}"
+  User's Current Prompt: "${userPrompt}"
 
-Respond as ${PERSONA.name} would, drawing from the context above.
-`;
+  Respond as ${PERSONA.name} would, drawing from the context above.
+  `;
 
   try {
     const result = await model.generateContent(context);
-    return result.response.text();
+    const fullResponse = result.response.text();
+    return fullResponse.split(" "); // Split into words
   } catch (error) {
     console.error("Error generating response:", error);
-    return "I'm having trouble processing your message right now.";
+    return ["I'm", "having", "trouble", "processing", "your", "message", "right", "now."];
   }
 }
 
@@ -139,11 +144,17 @@ async function handleSubmit(event) {
   promptInput.value = '';
 
   // Generate AI response
-  const aiResponse = await generateResponse(userMessage);
-  
-  // Display AI response
-  const markdownResponse = md().render(aiResponse);
-  chatContainer.innerHTML += createAIMessage(markdownResponse);
+  const aiResponseWords = await generateResponse(userMessage); // Now returns an array of words
+
+  // Display AI response progressively
+  const { container, preElement } = createAIMessageContainer();
+  chatContainer.appendChild(container);
+
+  // Display words with a delay
+  for (let word of aiResponseWords) {
+    preElement.textContent += word + " ";
+    await new Promise(resolve => setTimeout(resolve, 100)); // 100ms delay between words
+  }
 
   // Update conversation history
   conversationHistory.push({ 
@@ -152,7 +163,7 @@ async function handleSubmit(event) {
   });
   conversationHistory.push({ 
     role: 'ai', 
-    content: aiResponse 
+    content: aiResponseWords.join(" ") 
   });
 
   // Scroll to bottom
@@ -163,6 +174,15 @@ async function handleSubmit(event) {
 async function initApp() {
   // Load personal data first
   await loadPersonalData();
+
+  // Create an introduction message based on biodata
+  const introductionMessage = `Hello! I’m Jack Jay. How can I help you?`;
+
+  // Display the introduction message in the chat
+  const chatContainer = document.getElementById('chat-container');
+  const { container, preElement } = createAIMessageContainer();
+  preElement.textContent = introductionMessage;
+  chatContainer.appendChild(container);
 
   // Setup event listeners
   const chatForm = document.getElementById('chat-form');
