@@ -1,28 +1,94 @@
-Jack Jay, also known as Jackson Jesionowski, is a notable entrepreneur and founder of several initiatives focused on technology, education, and altruism. Here’s a comprehensive overview of his background, ventures, and contributions.
+I am Jack Jay (also known as Jackson Jesionowski), an entrepreneur and founder with a passion for technology, education, and altruism. Below is a comprehensive overview of my journey, ventures, and contributions.
+Good Karma Farmer. 
+
+In between India and SF reforming education networks to build powerful companies. 
+
+Currently focused on tech/Ai.
+
+Blog:
+https://JacksonJesionowski.com
+
 Personal Background
+
 Name: Jack Jay (Jackson Jesionowski)
-Location: Primarily based in San Francisco, California, with connections to India.
-Education: Attended the University of Arizona, where he pursued studies in Computer Science and Neuroscience but dropped out after one year.
-Professional Experience
-Persist Ventures
-Role: Founder
-Founded: March 2017
-Focus: Persist Ventures is an impact-focused venture studio aimed at accelerating altruism through innovative business models. The organization supports founders in building companies that address significant global challenges by providing access to mentorship, funding, and resources.
+Location: Primarily based in San Francisco, California, but with strong connections to India.
+Education: I attended the University of Arizona, where I pursued studies in Computer Science and Neuroscience but dropped out after one year.
+
+My Experience:
+Open Droids
+Role: Co-Founder
+Dates: February 2024 - Present (11 months)
+Type: Full-time
+Description:
+Co-founded Open Droids, an innovative tech venture focused on automation and AI-driven solutions.
+
 Systemic Altruism
 Role: President
-Founded: June 2023
-Mission: A 501(c)3 nonprofit organization dedicated to addressing global issues at their roots through effective altruism principles. Jack emphasizes the importance of philosophy and identity in shaping the future.
-Other Ventures
-Open Droids: Co-Founder (February 2024 - Present) - Focuses on technology solutions.
-Web3Studio: Co-Founder (February 2014 - May 2023) - Developed web solutions for startups and entrepreneurs.
-Cannafacturer: Co-Founder (January 2019 - December 2022) - A manufacturing facility for hemp and cannabinoid products that gained recognition for competitive pricing in the CBD market.
-Full Body Zen: CEO (September 2019 - November 2022) - Developed a line of CBD products after personal experiences with recovery from a concussion.
-Advisory Roles
-Jack has served as an investor and advisor for various startups including:
+Dates: June 2023 - Present (1 year 7 months)
+Location: San Francisco Bay Area (Hybrid)
+Description:
+Systemic Altruism is a 501(c)3 non-profit focused on solving global problems at their root. Through narrative and systemic change, the organization aims to address AI alignment and misaligned social media platforms. The initiatives also include upgrading education infrastructure, redefining social status, and more. Jack has been leading these projects to drive large-scale societal change.
+
+Workplete
+Role: Investor / Advisor
+Dates: March 2023 - Present (1 year 10 months)
+Type: Hybrid
+Description:
+Workplete focuses on automating remote work. Jack believes in the transformative power of AGI and its role in improving automation across industries. His investment supports Workplete's vision of the future of work, where general assistants and automation drive efficiency and productivity.
+
+Empowerverse
+Role: Investor / Advisor
+Dates: January 2023 - Present (2 years)
+Location: United States (Hybrid)
+Description:
+Empowerverse is a project focused on aligning AI with human values. Jack believes that algorithms can be used to turn devices into tools that inspire users to improve their lives, moving away from the exploitation inherent in current engagement algorithms.
+
 Startup College
+Role: Investor / Advisor
+Dates: November 2022 - Present (2 years 2 months)
+Location: Bengaluru, Karnataka, India
+Description:
+Startup College is an institution that empowers students to become startup founders. Jack supports its mission of creating an alternative to traditional education, where students learn by creating value in the real world. The aim is to foster innovation and entrepreneurship, avoiding the pitfalls of over-funded, first-time founders.
+
 Socialverse
+Role: Investor / Advisor
+Dates: March 2022 - Present (2 years 10 months)
+Description:
+Socialverse envisions a new world of social experiences inspired by community-driven games like Roblox and Minecraft. Jack invests in the project to help push this vision forward, creating immersive, mobile-first social experiences.
+
 Employer Grants
+Role: Investor / Advisor
+Dates: February 2022 - Present (2 years 11 months)
+Location: Los Angeles Metropolitan Area (Remote)
+Description:
+Invested in Employer Grants, a company focused on connecting businesses with grants. Jack supported the CEO, Rayan, in leading the company to expand its services and grow its impact.
+
+Persist Ventures
+Role: Chief Executive Officer
+Dates: March 2017 - Present (7 years 10 months)
+Location: San Francisco Bay Area (Hybrid)
+Description:
+Persist Ventures is a venture studio focused on accelerating altruism. It builds impactful companies and great founders, striving to improve the world through business innovation.
+
 Swissmote
+Role: Investor / Advisor
+Dates: January 2023 - May 2023 (5 months)
+Description:
+Swissmote is an international staffing agency aiming to disrupt the traditional resume system by using video introductions. Jack invested in Saqib Hussain, the CEO, to bring this vision to life.
+
+Web3Studio
+Role: Co-Founder
+Dates: February 2014 - May 2023 (9 years 4 months)
+Description:
+Web3Studio focused on building websites and recruiting talent using automated bots. Jack provided web development resources to entrepreneurs, often gifting website creations to those he wanted to support.
+
+Cannafacturer
+Role: Co-Founder
+Dates: January 2019 - December 2022 (4 years)
+Location: Tucson, Arizona, United States
+Description:
+Cannafacturer was a hemp and cannabinoid product manufacturing facility in Arizona. Jack co-founded the company, which was known for its clean working environment and competitive pricing in the CBD market.
+
 Achievements and Philosophy
 Jack's entrepreneurial journey began with a keen interest in creating impactful solutions. His early attempts included developing a PayPal to Ethereum exchange in 2017, which generated significant transaction volume shortly after launch. He emphasizes the need for structured support systems for early-stage innovators, drawing from his experiences of navigating the startup landscape independently.
 He has articulated a vision that combines technological innovation with social impact, aiming to create sustainable business models that contribute positively to society. His work reflects a commitment to reforming education networks and fostering entrepreneurship among youth.
