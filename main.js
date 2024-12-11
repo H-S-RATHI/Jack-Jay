@@ -35,6 +35,7 @@ let biodata = "";
 let linkedin = [];
 
 // Function to load data asynchronously
+// Function to load data asynchronously
 async function loadData() {
   try {
     // Update paths to refer to the 'public' folder
@@ -43,52 +44,80 @@ async function loadData() {
     biodata = await loadText('/biodata.txt');
     linkedin = await loadCSV('/linkedin.csv');
 
-    console.log("Tweets:", tweets);
-    console.log("Facebook Posts:", facebookPosts);
-    console.log("Biodata:", biodata);
-    console.log("LinkedIn Data:", linkedin);
+    // Debugging: Log the loaded data
+    console.log("Loaded Tweets:", tweets);
+    console.log("Loaded Facebook Posts:", facebookPosts);
+    console.log("Loaded Biodata:", biodata);
+    console.log("Loaded LinkedIn Data:", linkedin);
   } catch (error) {
     console.error("Error loading data:", error);
   }
 }
-
-// Call loadData to fetch the files
 loadData();
 
 // Function to get AI response
 async function getResponse(prompt) {
-  let enrichedPrompt = prompt;
+  // Debugging: Check if the data has been loaded before building the enrichedPrompt
+  console.log("Data before creating enrichedPrompt:");
+  console.log("Tweets:", tweets);
+  console.log("Facebook Posts:", facebookPosts);
+  console.log("Biodata:", biodata);
+  console.log("LinkedIn:", linkedin);
 
-  // Check for specific keywords and enhance the prompt accordingly
+  let enrichedPrompt = `You are jack jay, a person whose biodata, social media posts, and background details are as follows:\n`;
+
+  // Add personal biodata
+  enrichedPrompt += `Biodata: ${biodata}\n\n`;
+
+  // Log enrichedPrompt after adding biodata
+  console.log("Enriched Prompt after adding biodata:", enrichedPrompt);
+
+  // Add tweets if relevant
   if (prompt.toLowerCase().includes("tweet")) {
-    enrichedPrompt += ` Here are some tweets I posted: ${tweets.map(t => t.text).join(", ")}`;
-  }
-  if (prompt.toLowerCase().includes("facebook")) {
-    enrichedPrompt += ` Here are some of my Facebook posts: ${facebookPosts.map(f => f.post).join(", ")}`;
-  }
-  if (prompt.toLowerCase().includes("bio")) {
-    enrichedPrompt += ` Here is my biodata: ${biodata}`;
-  }
-  if (prompt.toLowerCase().includes("linkedin")) {
-    enrichedPrompt += ` Here is my LinkedIn info: ${linkedin.map(l => l.job).join(", ")}`;
+    enrichedPrompt += `\nHere are some tweets I posted:\n${tweets.map(t => 
+      `Author: ${t.Author}, Type: ${t.Type}, Tweet: "${t.TweetText}", Created At: ${t.CreatedAt}, Media: ${t.Media}`
+    ).join("\n")}`;
+
+    // Log enrichedPrompt after adding tweets
+    console.log("Enriched Prompt after adding tweets:", enrichedPrompt);
   }
 
-  // Send the enriched prompt to the AI model
+  // Add Facebook posts if relevant
+  if (prompt.toLowerCase().includes("facebook")) {
+    enrichedPrompt += `\nHere are some of my Facebook posts:\n${facebookPosts.map(f => 
+      `Author: ${f.Author}, Content: "${f.Content}", Posted At: ${f["Posted At"]}`
+    ).join("\n")}`;
+
+    // Log enrichedPrompt after adding Facebook posts
+    console.log("Enriched Prompt after adding Facebook posts:", enrichedPrompt);
+  }
+
+  // Add LinkedIn posts if relevant
+  if (prompt.toLowerCase().includes("linkedin")) {
+    enrichedPrompt += `\nHere is my LinkedIn info:\n${linkedin.map(l => `Post: ${l.postText}`).join("\n")}`;
+
+    // Log enrichedPrompt after adding LinkedIn info
+    console.log("Enriched Prompt after adding LinkedIn info:", enrichedPrompt);
+  }
+
+  // Customize response based on the prompt
+  enrichedPrompt += `Someone asked me: "${prompt}". Based on the above details, my response is:`;
+
+  // Log enrichedPrompt just before sending it to the model
+  console.log("Enriched Prompt before sending to AI:", enrichedPrompt);
+
+  // Send enriched prompt to the AI model
   const chat = await model.startChat({ history: history });
   const result = await chat.sendMessage(enrichedPrompt);
-  
-  // Handle potential errors in response
+
   if (!result || !result.response) {
     console.error("No response from AI model.");
     return "I'm having trouble finding an answer right now.";
   }
 
-  const response = await result.response;
-  const text = response.text();
-
-  console.log(text);
-  return text;
+  return result.response.text();
 }
+
 
 // user chat div
 export const userDiv = (data) => {
