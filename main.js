@@ -58,8 +58,6 @@ async function loadPersonalData() {
     personalData.facebookPosts = await loadCSV('/facebook.csv');
     personalData.linkedinPosts = await loadCSV('/linkedin.csv');
     personalData.biodata = await loadText('/biodata.txt');
-
-    console.log("Personal data loaded successfully");
   } catch (error) {
     console.error("Error loading personal data:", error);
   }
@@ -71,26 +69,30 @@ let conversationHistory = [];
 // UI Helper Functions
 function createUserMessage(message) {
   return `
-  <div class="flex items-center gap-2 justify-start">
-    <img src="user.jpg" alt="user icon" class="w-10 h-10 rounded-full" />
+  <div class="flex items-center gap-2 justify-end">
+    
     <p class="bg-gemDeep text-white p-2 rounded-md shadow-md">${message}</p>
+    <img src="user.jpg" alt="user icon" class="w-10 h-10 rounded-full" />
   </div>
   `;
 }
 
 function createAIMessageContainer() {
+  
   const container = document.createElement("div");
-  container.classList.add("flex", "gap-2", "justify-end", "items-start");
-
-  const preElement = document.createElement("pre");
-  preElement.classList.add("bg-gemRegular/40", "text-gemDeep", "p-2", "rounded-md", "shadow-md", "whitespace-pre-wrap", "max-w-[80%]");
-  container.appendChild(preElement);
+  container.classList.add("flex", "gap-2", "justify-start", "items-start");
 
   const imgElement = document.createElement("img");
   imgElement.src = "jack.webp";
   imgElement.alt = "jack image";
   imgElement.classList.add("w-10", "h-10", "rounded-full");
   container.appendChild(imgElement);
+
+  const preElement = document.createElement("pre");
+  preElement.classList.add("bg-gemRegular/40", "text-gemDeep", "p-2", "rounded-md", "shadow-md", "whitespace-pre-wrap", "max-w-[80%]");
+  container.appendChild(preElement);
+
+  
 
   return { container, preElement };
 }
@@ -107,6 +109,14 @@ async function generateResponse(userPrompt) {
 
   Recent Social Media Context:
   Tweets: ${personalData.tweets.slice(0, 100).map(t => t.TweetText).join(' | ')}
+  Tweets2: ${personalData.tweets.slice(101, 200).map(t => t.TweetText).join(' | ')}
+  Tweets3: ${personalData.tweets.slice(201, 300).map(t => t.TweetText).join(' | ')}
+  Tweets4: ${personalData.tweets.slice(301, 400).map(t => t.TweetText).join(' | ')}
+  Tweets5: ${personalData.tweets.slice(401, 500).map(t => t.TweetText).join(' | ')}
+  Tweets6: ${personalData.tweets.slice(501, 600).map(t => t.TweetText).join(' | ')}
+  Tweets7: ${personalData.tweets.slice(601, 700).map(t => t.TweetText).join(' | ')}
+  Tweets8: ${personalData.tweets.slice(900, 950).map(t => t.TweetText).join(' | ')}
+  Tweets8: ${personalData.tweets.slice(1101, 1150).map(t => t.TweetText).join(' | ')}
   Facebook Posts: ${personalData.facebookPosts.map(p => p.Content).join(' | ')}
   LinkedIn Posts: ${personalData.linkedinPosts.map(p => p.postText).join(' | ')}
 
@@ -143,8 +153,23 @@ async function handleSubmit(event) {
   // Clear input
   promptInput.value = '';
 
+  // Add loading spinner
+  const loadingSpinner = document.createElement('div');
+  loadingSpinner.id = 'loading-spinner';
+  loadingSpinner.className = 'flex justify-start items-center gap-2';
+  loadingSpinner.innerHTML = `
+    <span class="text-gemDeep">Generating response...</span>
+  `;
+  chatContainer.appendChild(loadingSpinner);
+
+  // Scroll to bottom to show loading spinner
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+
   // Generate AI response
   const aiResponseWords = await generateResponse(userMessage); // Now returns an array of words
+
+  // Remove loading spinner
+  chatContainer.removeChild(loadingSpinner);
 
   // Display AI response progressively
   const { container, preElement } = createAIMessageContainer();
