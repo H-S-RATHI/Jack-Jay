@@ -123,7 +123,7 @@ async function generateResponse(userPrompt) {
 
   User's Current Prompt: "${userPrompt}"
 
-  Respond as ${PERSONA.name} would, drawing from the context above.
+  Respond as ${PERSONA.name} would, drawing from the context above. and copy the peronnalitty and style and tune using all of above data
   `;
 
   try {
