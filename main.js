@@ -4,7 +4,7 @@ import Papa from "papaparse";
 
 // Configuration
 const API_KEY = "AIzaSyCAfrJKPuP1GpBEdUl1j0vWAevWBXuTSlA"; // Replace with your actual API key
-const model = new GoogleGenerativeAI(API_KEY).getGenerativeModel({ model: "gemini-1.5-flash"});
+const model = new GoogleGenerativeAI(API_KEY).getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // Persona Configuration
 const PERSONA = {
@@ -58,7 +58,6 @@ async function loadPersonalData() {
     personalData.facebookPosts = await loadCSV('/facebook.csv');
     personalData.linkedinPosts = await loadCSV('/linkedin.csv');
     personalData.biodata = await loadText('/biodata.txt');
-
   } catch (error) {
     console.error("Error loading personal data:", error);
   }
@@ -71,7 +70,6 @@ let conversationHistory = [];
 function createUserMessage(message) {
   return `
   <div class="flex items-center gap-2 justify-end">
-    
     <p class="bg-gemDeep text-white p-2 rounded-md shadow-md">${message}</p>
     <img src="user.jpg" alt="user icon" class="w-10 h-10 rounded-full" />
   </div>
@@ -79,9 +77,8 @@ function createUserMessage(message) {
 }
 
 function createAIMessageContainer() {
-  
   const container = document.createElement("div");
-  container.classList.add("flex", "gap-2", "justify-start", "items-start","w-3");
+  container.classList.add("flex", "gap-2", "justify-start", "items-start", "w-3");
 
   const imgElement = document.createElement("img");
   imgElement.src = "jack.webp";
@@ -93,8 +90,6 @@ function createAIMessageContainer() {
   preElement.classList.add("bg-gemRegular/40", "text-gemDeep", "p-2", "rounded-md", "shadow-md", "whitespace-pre-wrap", "max-w-[80%]");
   container.appendChild(preElement);
 
-  
-
   return { container, preElement };
 }
 
@@ -103,22 +98,22 @@ async function generateResponse(userPrompt) {
   const context = `
   Persona Details:
   Name: ${PERSONA.name}
-  Communication Style: ${PERSONA.communication_style}
 
   Personal Background:
   ${personalData.biodata}
 
   Recent Social Media Context:
-  Tweets: ${personalData.tweets.map(t => t.TweetText).join(' | ')}
-  
-  Facebook Posts: ${personalData.facebookPosts.map(p => p.Content).join(' | ')}
+  Tweets: ${personalData.tweets.map(t => `Author: ${t.Author}, Type: ${t.Type}, TweetText: ${t.TweetText}, CreatedAt: ${t.CreatedAt}, Media: ${t.Media}`).join(' | ')}
+
+  Facebook Posts: ${personalData.facebookPosts.map(p => `Author: ${p.Author}, Content: ${p.Content}, PostedAt: ${p.PostedAt}`).join(' | ')}
+
   LinkedIn Posts: ${personalData.linkedinPosts.map(p => p.postText).join(' | ')}
 
   Conversation History: ${conversationHistory.map(h => h.role + ': ' + h.content).join('\n')}
 
   User's Current Prompt: "${userPrompt}"
 
-  Respond as ${PERSONA.name} would, drawing from the context above. and copy the peronnalitty and style and tune using all of above data
+  Respond as ${PERSONA.name} would, drawing from the context above, and copy the personality and style while tuning using all of the data above.
   `;
 
   try {
@@ -127,23 +122,21 @@ async function generateResponse(userPrompt) {
     return fullResponse.split(" "); // Split into words
   } catch (error) {
     console.error("Error generating response:", error);
-    return ["I'm", "having", "trouble", "processing", "your", "message", "right", "now.","As","API", "can", "process","only","two", "request","per min"];
+    return ["I'm", "having", "trouble", "processing", "your", "message", "right", "now.", "As", "API", "can", "process", "only", "two", "requests", "per", "minute."];
   }
 }
 
 // Event Handling
 async function handleSubmit(event) {
   event.preventDefault();
-  
   const promptInput = document.getElementById('prompt');
   const chatContainer = document.getElementById('chat-container');
-  
   const userMessage = promptInput.value.trim();
   if (!userMessage) return;
 
   // Display user message
   chatContainer.innerHTML += createUserMessage(userMessage);
-  
+
   // Clear input
   promptInput.value = '';
 
@@ -196,9 +189,9 @@ async function initApp() {
 
   // Create an introduction message based on biodata
   const introductionMessage = `Hello! I’m Jack Jay. How can I help you? 
-  [  If you're getting the message "I'm having trouble processing your message right now," 
+  [If you're getting the message "I'm having trouble processing your message right now," 
   it may be due to the free API experiencing high data loads or temporary unavailability. 
-  You can try refreshing the page to ask again or wait one min.]`;
+  You can try refreshing the page to ask again or wait one minute.]`;
 
   // Display the introduction message in the chat
   const chatContainer = document.getElementById('chat-container');
