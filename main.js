@@ -10,7 +10,7 @@ const model = new GoogleGenerativeAI(API_KEY).getGenerativeModel({ model: "gemin
 const PERSONA = {
   name: "Jack Jay",
   background: "",
-  communication_style: "Direct and informative"
+  communication_style: "Detailed and informative"
 };
 
 // Utility Functions for Data Loading
