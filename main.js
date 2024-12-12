@@ -132,7 +132,7 @@ async function generateResponse(userPrompt) {
     return fullResponse.split(" "); // Split into words
   } catch (error) {
     console.error("Error generating response:", error);
-    return ["I'm", "having", "trouble", "processing", "your", "message", "right", "now."];
+    return ["I'm", "having", "trouble", "processing", "your", "message", "right", "now.","As","API", "can", "process","only","two", "request","per min"];
   }
 }
 
