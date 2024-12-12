@@ -4,7 +4,7 @@ import Papa from "papaparse";
 
 // Configuration
 const API_KEY = "AIzaSyCAfrJKPuP1GpBEdUl1j0vWAevWBXuTSlA"; // Replace with your actual API key
-const model = new GoogleGenerativeAI(API_KEY).getGenerativeModel({ model: "gemini-pro" });
+const model = new GoogleGenerativeAI(API_KEY).getGenerativeModel({ model: "gemini-1.5-flash"});
 
 // Persona Configuration
 const PERSONA = {
@@ -81,7 +81,7 @@ function createUserMessage(message) {
 function createAIMessageContainer() {
   
   const container = document.createElement("div");
-  container.classList.add("flex", "gap-2", "justify-start", "items-start");
+  container.classList.add("flex", "gap-2", "justify-start", "items-start","w-3");
 
   const imgElement = document.createElement("img");
   imgElement.src = "jack.webp";
@@ -109,12 +109,7 @@ async function generateResponse(userPrompt) {
   ${personalData.biodata}
 
   Recent Social Media Context:
-  Tweets: ${personalData.tweets.slice(0, 100).map(t => t.TweetText).join(' | ')}
-  Tweets2: ${personalData.tweets.slice(101, 200).map(t => t.TweetText).join(' | ')}
-  Tweets3: ${personalData.tweets.slice(201, 300).map(t => t.TweetText).join(' | ')}
-  Tweets8: ${personalData.tweets.slice(900, 950).map(t => t.TweetText).join(' | ')}
-  Tweets8: ${personalData.tweets.slice(1101, 1150).map(t => t.TweetText).join(' | ')}
-  Tweets8: ${personalData.tweets.slice(1201, 1250).map(t => t.TweetText).join(' | ')}
+  Tweets: ${personalData.tweets.map(t => t.TweetText).join(' | ')}
   
   Facebook Posts: ${personalData.facebookPosts.map(p => p.Content).join(' | ')}
   LinkedIn Posts: ${personalData.linkedinPosts.map(p => p.postText).join(' | ')}
