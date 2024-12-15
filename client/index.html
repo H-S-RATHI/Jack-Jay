@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jack Jay</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="body">
+    <main class="main">
+      <!-- Header -->
+      <header class="header">
+        <img src="jack.webp" alt="jack image" class="profile-image" />
+        <h1 class="header-title">Jack Jay</h1>
+      </header>
+
+      <!-- Top-right Twitter Button -->
+      <button id="twitter-account-btn" class="twitter-account-btn">Twitter Account</button>
+
+      <!-- Chat Box -->
+      <div class="chat-box">
+        <!-- Chat area -->
+        <div class="chat-container" id="chat-container"></div>
+      </div>
+
+      <!-- prompt -->
+      <form action="" method="post" class="chat-form" id="chat-form">
+        <textarea
+          name="prompt"
+          id="prompt"
+          cols="30"
+          rows="4"
+          class="chat-input"
+          placeholder="Enter message here..."
+        ></textarea>
+        <button type="submit" class="send-button">Send</button>
+        <button id="generate-tweet-btn" class="tweet-button">Generate & Post AI Tweet</button>
+      </form>
+    </main>
+
+    <!-- Hidden Update Keys Form -->
+    <form id="update-keys-form" class="update-keys-form">
+      <h2>Update API Credentials</h2>
+      <label for="appKey">App Key:</label>
+      <input type="text" id="appKey" name="appKey" required />
+      <br />
+      <label for="appSecret">App Secret:</label>
+      <input type="text" id="appSecret" name="appSecret" required />
+      <br />
+      <label for="accessToken">Access Token:</label>
+      <input type="text" id="accessToken" name="accessToken" required />
+      <br />
+      <label for="accessSecret">Access Secret:</label>
+      <input type="text" id="accessSecret" name="accessSecret" required />
+      <br />
+      <button type="submit">Update API Keys</button>
+    </form>
+
+    <script type="module" src="/main.js"></script>
+    <script>
+      // JavaScript to toggle form visibility
+      document.getElementById("twitter-account-btn").addEventListener("click", () => {
+        const form = document.getElementById("update-keys-form");
+        form.style.display = form.style.display === "block" ? "none" : "block";
+      });
+    </script>
+  </body>
+</html>

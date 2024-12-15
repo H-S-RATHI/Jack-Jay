@@ -1,0 +1,200 @@
+/* Global styles */
+.body {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Main container */
+.main {
+  width: 100%;
+  background-color: #f1f5f9; /* Equivalent to bg-gemLight */
+  min-height: calc(100vh - 1rem);
+  max-height: calc(100vh - 1rem);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  padding: 0.5rem;
+  background-color: #4b5563; /* Equivalent to bg-gemRegular */
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.profile-image {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+}
+
+.header-title {
+  color: #1f2937; /* Equivalent to text-gemDeep */
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+/* Chat box */
+.chat-box {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.chat-container {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Form styles */
+.chat-form {
+  padding: 0.5rem;
+}
+
+.chat-input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  resize: none;
+  border: 1px solid #e5e7eb;
+  outline: none;
+}
+
+.send-button {
+  width: 100%;
+  padding: 0.25rem;
+  background-color: #1f2937; /* Equivalent to bg-gemDeep */
+  border-radius: 0.375rem;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.tweet-button {
+  background-color: #3b82f6; /* Equivalent to bg-blue-500 */
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  border: none;
+  cursor: pointer;
+}
+
+/* Update API keys form */
+.update-keys-form {
+  margin-top: 1rem;
+}
+/* Container Styles */
+.user-message-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.ai-message-container {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+/* Message Styles */
+.user-message {
+  background-color: #0a84ff;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ai-message {
+  background-color: #f0f4ff;
+  color: #0a84ff;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  white-space: pre-wrap;
+  max-width: 80%;
+}
+
+/* Avatar Styles */
+.user-avatar, .ai-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0a84ff;
+  font-size: 14px;
+}
+/* Position Twitter Account button */
+.twitter-account-btn {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 10px 20px;
+  background-color: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.twitter-account-btn:hover {
+  background-color: #0d95e8;
+}
+
+/* Update Keys Form Styling */
+.update-keys-form {
+  display: none; /* Hide by default */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.update-keys-form h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.update-keys-form input {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.update-keys-form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.update-keys-form button:hover {
+  background-color: #0d95e8;
+}

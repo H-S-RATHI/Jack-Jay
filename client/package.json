@@ -1,0 +1,27 @@
+{
+  "name": "jack_jay",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tweet": "node twitter.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.3.6",
+    "vite": "^5.0.8"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.1.2",
+    "dotenv": "^16.4.7",
+    "events": "^3.3.0",
+    "markdown-it": "^14.0.0",
+    "papaparse": "^5.4.1",
+    "twitter-api-v2": "^1.18.2"
+  }
+}
