@@ -205,6 +205,13 @@ async function initApp() {
   // Setup event listeners
   const chatForm = document.getElementById('chat-form');
   chatForm.addEventListener('submit', handleSubmit);
+  const promptInput = document.getElementById('prompt');
+  promptInput.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();  // Prevent default behavior (new line in the input)
+      chatForm.dispatchEvent(new Event('submit'));  // Trigger the form submit
+    }
+  });
 }
 
 // Start the application
@@ -213,7 +220,7 @@ document.addEventListener('DOMContentLoaded', initApp);
 // Function to update API keys
 async function updateAPIKeys(appKey, appSecret, accessToken, accessSecret) {
   try {
-      const response = await fetch('http://localhost:3000', {
+      const response = await fetch('https://jack-jay.onrender.com', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -246,4 +253,75 @@ document.getElementById('update-keys-form').addEventListener('submit', (event) =
   // Call the update function
   updateAPIKeys(appKey, appSecret, accessToken, accessSecret);
 });
+
+// Handle Generate and Post Tweet Button Click
+document.getElementById('generate-tweet-btn').addEventListener('click', async () => {
+  const chatContainer = document.getElementById('chat-container');
+
+  // Generate AI Tweet
+  const { container, preElement } = createAIMessageContainer();
+  chatContainer.appendChild(container);
+  preElement.textContent = "Generating AI Tweet...";
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+
+  try {
+    const aiTweet = await generateResponse("Generate a new tweet for me.[strictly given command -> tweet within 280 characters, including spaces and punctuation.]"); // AI generates tweet content
+    preElement.textContent = aiTweet.join(" "); // Display generated tweet
+
+    // Post AI Tweet to Backend
+    const response = await fetch('https://jack-jay.onrender.com/tweet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ tweetContent: aiTweet.join(" ") }),
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      console.log('Tweet posted successfully:', result);
+      preElement.textContent += "\n\n(Tweet successfully posted!)";
+    } else {
+      console.error('Error posting tweet:', result);
+      preElement.textContent += "\n\n(Error posting tweet)";
+    }
+  } catch (error) {
+    console.error('Error generating or posting tweet:', error);
+    preElement.textContent = "Failed to generate or post the tweet.";
+  }
+
+  // Scroll to show response
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+});
+
+let tweetTimer = null;
+
+// Start Automatic Tweet Timer
+document.getElementById('start-timer-btn').addEventListener('click', () => {
+  const isTimerEnabled = document.getElementById('timer-toggle').checked;
+  const intervalMinutes = parseInt(document.getElementById('timer-interval').value, 10);
+
+  if (isTimerEnabled && intervalMinutes > 0) {
+    if (tweetTimer) clearInterval(tweetTimer); // Clear any existing timer
+    tweetTimer = setInterval(() => {
+      document.getElementById('generate-tweet-btn').click();
+    }, intervalMinutes * 60 * 1000); // Convert minutes to milliseconds
+    alert(`Automatic tweet timer started: Every ${intervalMinutes} minutes.`);
+  } else {
+    alert('Please enable the timer and set a valid interval.');
+  }
+});
+
+// Stop Automatic Tweet Timer
+document.getElementById('stop-timer-btn').addEventListener('click', () => {
+  if (tweetTimer) {
+    clearInterval(tweetTimer);
+    tweetTimer = null;
+    alert('Automatic tweet timer stopped.');
+  } else {
+    alert('No timer is running.');
+  }
+});
+
+
 

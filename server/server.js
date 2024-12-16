@@ -12,10 +12,10 @@ app.use(cors()); // Enable Cross-Origin Resource Sharing
 
 // Initialize variables for Twitter API credentials
 let client = new TwitterApi({
-    appKey: '0kaMj2wyplgvVk7LwCxX8zx6J',
-    appSecret: 'b0QeTzkGz06O8vuIgAZ9pp5mhPE4hYvfX2JAWT473K9v7GPAbe',
-    accessToken: '1683885683536977920-Jz1qFkySrfUUmndhL7ExPmoe5qlEGr',
-    accessSecret: 'o1hMFuPAGyHglpfLGtsVDMHacye9Q7VBhYoflzF3TKrJS',
+    appKey: 'FqCQr3e00hkKaR3SFo1uYEYR3',
+    appSecret: 'LKy1FeXKjMnha07Z7GwmXelDC9gfLFIzvDnIkunN1B74qjxYvE',
+    accessToken: '1865283887196176384-rQeYMf4peUiZcamgr4u7qI6EpCkEiY',
+    accessSecret: 'J5CXQJZk1RwAmYmBKLkNKMGpWxJQbn5qcTo1DVgoGjZXK',
 });
 
 

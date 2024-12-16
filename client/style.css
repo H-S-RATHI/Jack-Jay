@@ -56,25 +56,44 @@
 /* Form styles */
 .chat-form {
   padding: 0.5rem;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2%;
+}
+.input-container {
+  position: relative;
+  width: 90%;
+  display: flex;
+  justify-content: center;
 }
 
 .chat-input {
+  align-items: center;
   width: 100%;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
+  padding-left: 4%;
+  border-radius: 3.375rem;
   resize: none;
   border: 1px solid #e5e7eb;
   outline: none;
+  flex-grow: 1;
+  box-sizing: border-box; /* Ensure padding is included in width calculation */
+  height: 50px;
+  line-height: 45px;
 }
 
 .send-button {
-  width: 100%;
-  padding: 0.25rem;
+  position: absolute;
+  right: 10px; /* Adjust position */
+  top: 50%;
+  transform: translateY(-50%);  /* Align button vertically centered */
   background-color: #1f2937; /* Equivalent to bg-gemDeep */
   border-radius: 0.375rem;
   color: white;
   border: none;
   cursor: pointer;
+  padding: 0.5rem;
+  font-size: 14px;
+  z-index: 1; /* Ensure button is on top */
 }
 
 .tweet-button {
@@ -142,9 +161,9 @@
 }
 /* Position Twitter Account button */
 .twitter-account-btn {
-  position: fixed;
-  top: 10px;
-  right: 10px;
+  position: absolute; /* Ensure it's positioned relative to the nearest positioned parent */
+  top: 27px; /* Add some spacing from the top */
+  right: 27px;
   padding: 10px 20px;
   background-color: #1da1f2;
   color: white;
@@ -197,4 +216,155 @@
 
 .update-keys-form button:hover {
   background-color: #0d95e8;
+}
+
+
+.timer-button {
+  background-color: #4caf50; /* Green background */
+  color: white; /* White text */
+  font-size: 1rem; /* Slightly larger font */
+  padding: 10px 20px; /* Padding for a clickable feel */
+  margin: 10px; /* Space around the button */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
+}
+
+.timer-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+  transform: scale(1.05); /* Slight scaling effect */
+}
+
+.timer-button:active {
+  background-color: #3e8e41; /* Even darker green when pressed */
+}
+
+
+
+
+/* Styling for the form container */
+.timer-form {
+  position: fixed; /* Stay fixed on the screen */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust for perfect centering */
+  background-color: #f9f9f9; /* Soft white background */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Strong shadow for depth */
+  border-radius: 12px; /* Rounded corners */
+  padding: 20px; /* Padding inside the form */
+  width: 320px; /* Fixed width for a compact look */
+  z-index: 1001; /* Layer above backdrop */
+  display: flex; /* Flexbox layout */
+  flex-direction: column; /* Stack items vertically */
+  gap: 15px; /* Space between elements */
+}
+
+/* Form header styling */
+.timer-form h2 {
+  font-size: 1.5rem; /* Slightly larger header font */
+  text-align: center; /* Center-align the text */
+  color: #222; /* Dark text color */
+  margin: 0; /* Remove extra margin */
+}
+
+/* Label styling */
+.timer-form label {
+  font-size: 1rem; /* Standard font size */
+  color: #333; /* Dark gray for readability */
+  font-weight: 600; /* Slightly bold for emphasis */
+  display: flex; /* Flexbox for alignment */
+  align-items: center; /* Center vertically */
+  gap: 10px; /* Space between checkbox and text */
+}
+
+/* Checkbox styling */
+.timer-form input[type="checkbox"] {
+  width: 18px; /* Fixed size */
+  height: 18px; /* Fixed size */
+  accent-color: #007bff; /* Use blue color for modern look */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor for interactivity */
+}
+
+/* Input field styling for the interval */
+.timer-form input[type="number"] {
+  width: 80%; /* Full width for better alignment */
+  padding: 8px 12px; /* Internal padding */
+  font-size: 1rem; /* Comfortable font size */
+  border: 1px solid #ccc; /* Light border for input field */
+  border-radius: 8px; /* Rounded corners */
+  background-color: #fefefe; /* Slightly lighter background */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle inner shadow */
+  outline: none; /* Remove default focus outline */
+  transition: border-color 0.3s ease; /* Smooth focus effect */
+}
+
+/* On focus */
+.timer-form input[type="number"]:focus {
+  border-color: #007bff; /* Blue border on focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Glow effect */
+}
+
+/* Button styles */
+.timer-form button {
+  font-size: 1rem; /* Comfortable font size */
+  padding: 10px 15px; /* Padding for a button-like appearance */
+  border: none; /* No border */
+  border-radius: 8px; /* Rounded corners for modern look */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+  text-transform: uppercase; /* All caps for button labels */
+  letter-spacing: 1px; /* Slight letter spacing for aesthetics */
+  font-weight: 600; /* Slightly bold for readability */
+}
+
+/* Start button */
+.timer-form #start-timer-btn {
+  background-color: #28a745; /* Green background */
+  color: #fff; /* White text */
+}
+
+.timer-form #start-timer-btn:hover {
+  background-color: #218838; /* Darker green on hover */
+  transform: scale(1.02); /* Slight grow on hover */
+}
+
+.timer-form #start-timer-btn:active {
+  background-color: #1e7e34; /* Even darker green on press */
+  transform: scale(0.98); /* Slight shrink on press */
+}
+
+/* Stop button */
+.timer-form #stop-timer-btn {
+  background-color: #dc3545; /* Red background */
+  color: #fff; /* White text */
+}
+
+.timer-form #stop-timer-btn:hover {
+  background-color: #c82333; /* Darker red on hover */
+  transform: scale(1.02); /* Slight grow on hover */
+}
+
+.timer-form #stop-timer-btn:active {
+  background-color: #bd2130; /* Even darker red on press */
+  transform: scale(0.98); /* Slight shrink on press */
+}
+
+/* Add some spacing between start and stop buttons */
+.timer-form #start-timer-btn,
+.timer-form #stop-timer-btn {
+  margin-top: 10px;
+}
+
+/* Backdrop for modal */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark backdrop */
+  z-index: 1000; /* Below the form */
+  display: none; /* Hidden initially */
 }
