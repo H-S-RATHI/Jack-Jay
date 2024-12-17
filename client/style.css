@@ -44,6 +44,7 @@
 .chat-box {
   flex: 1;
   overflow-y: auto;
+  max-height: 100%;
 }
 
 .chat-container {
