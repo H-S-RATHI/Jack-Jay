@@ -190,6 +190,7 @@
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  padding-top: 45px;
 }
 
 .update-keys-form h2 {
@@ -198,14 +199,14 @@
 }
 
 .update-keys-form input {
-  width: 100%;
+  width: 94%;
   padding: 8px;
   margin: 5px 0 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
-.update-keys-form button {
+.update-keys-form .update {
   width: 100%;
   padding: 10px;
   background-color: #1da1f2;
@@ -258,7 +259,9 @@
   z-index: 1001; /* Layer above backdrop */
   display: flex; /* Flexbox layout */
   flex-direction: column; /* Stack items vertically */
-  gap: 15px; /* Space between elements */
+  gap: 15px;
+  height: 210px;
+  padding-top: 50px; /* Space between elements */
 }
 
 /* Form header styling */
@@ -266,7 +269,7 @@
   font-size: 1.5rem; /* Slightly larger header font */
   text-align: center; /* Center-align the text */
   color: #222; /* Dark text color */
-  margin: 0; /* Remove extra margin */
+  margin-bottom: 20px; /* Remove extra margin */
 }
 
 /* Label styling */
@@ -308,7 +311,7 @@
 }
 
 /* Button styles */
-.timer-form button {
+.timer-form .start,.stop {
   font-size: 1rem; /* Comfortable font size */
   padding: 10px 15px; /* Padding for a button-like appearance */
   border: none; /* No border */
@@ -368,4 +371,37 @@
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark backdrop */
   z-index: 1000; /* Below the form */
   display: none; /* Hidden initially */
+}
+
+.close-button {
+  position: absolute;
+  top: -1px;
+  right: 0px;
+  font-size: 40px;
+  background: rgb(96 255 0);
+  border: none;
+  color: rgb(51, 51, 51);
+  cursor: pointer;
+  border-radius: 0px 12px 0px 0px
+}
+
+.close-button:hover {
+  color: rgb(255, 255, 255);
+  background: black;
+}
+
+.update-close-button {
+  position: absolute;
+  top: -1px;
+  right: 0px;
+  font-size: 40px;
+  background: rgb(96 255 0);
+  border: none;
+  color: rgb(51, 51, 51);
+  cursor: pointer;
+}
+
+.update-close-button:hover {
+  color: rgb(255, 255, 255);
+  background: black;
 }

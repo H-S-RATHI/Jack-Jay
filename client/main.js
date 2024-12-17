@@ -238,6 +238,10 @@ async function updateAPIKeys(appKey, appSecret, accessToken, accessSecret) {
   }
 }
 
+// Close the form when the 'X' button is clicked without updating
+document.getElementById('close-update-keys-form').addEventListener('click', () => {
+  document.getElementById('update-keys-form').style.display = 'none';
+});
 // Add an event listener to handle form submission
 document.getElementById('update-keys-form').addEventListener('submit', (event) => {
   event.preventDefault();
@@ -316,12 +320,13 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
       body: JSON.stringify({ tweetContent }),
     });
 
-    if (response.ok) {
+    if (response.status===200) {
       preElement.textContent += "\n\n(Tweet successfully posted!)";
     } else if (response.status === 429) {
       preElement.textContent += "\n\nDaily limit reached: You can post only 17 tweets per day.";
     } else {
-      throw new Error(`Error posting tweet: ${response.statusText}`);
+      const errorText = await response.text();
+      preElement.textContent = `Error posting tweet: ${response.statusText}. Details: ${errorText}`;
     }
   } catch (error) {
     console.error("Error generating or posting tweet:", error);
@@ -335,25 +340,37 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
 
 
 let tweetTimer = null;
+// Start Automatic Tweet Timer
 document.getElementById('start-timer-btn').addEventListener('click', () => {
   const isTimerEnabled = document.getElementById('timer-toggle').checked;
   const intervalMinutes = parseInt(document.getElementById('timer-interval').value, 10);
+
+  // Validation: Check if timer is enabled and interval is greater than 0
   if (isTimerEnabled && intervalMinutes > 0) {
     if (tweetTimer) clearInterval(tweetTimer); // Clear any existing timer
     tweetTimer = setInterval(() => {
       document.getElementById('generate-tweet-btn').click();
     }, intervalMinutes * 60 * 1000); // Convert minutes to milliseconds
     alert(`Automatic tweet timer started: Every ${intervalMinutes} minutes.`);
+    
+    // Close the timer form and backdrop
+    document.getElementById('timer-form').style.display = 'none';
+    document.getElementById('backdrop').style.display = 'none';
   } else {
     alert('Please enable the timer and set a valid interval.');
   }
 });
+
 // Stop Automatic Tweet Timer
 document.getElementById('stop-timer-btn').addEventListener('click', () => {
   if (tweetTimer) {
     clearInterval(tweetTimer);
     tweetTimer = null;
     alert('Automatic tweet timer stopped.');
+    
+    // Close the timer form and backdrop
+    document.getElementById('timer-form').style.display = 'none';
+    document.getElementById('backdrop').style.display = 'none';
   } else {
     alert('No timer is running.');
   }

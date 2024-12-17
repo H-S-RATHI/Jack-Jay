@@ -42,6 +42,7 @@
       <!-- Hidden Update Keys Form -->
       <form id="update-keys-form" class="update-keys-form">
         <h2>Update API Credentials</h2>
+        <button type="button" id="close-update-keys-form" class="update-close-button">&times;</button>
         <label for="appKey">App Key:</label>
         <input type="text" id="appKey" name="appKey" required />
         <br />
@@ -54,20 +55,21 @@
         <label for="accessSecret">Access Secret:</label>
         <input type="text" id="accessSecret" name="accessSecret" required />
         <br />
-        <button type="submit">Update API Keys</button>
+        <button type="submit" class="update">Update API Keys</button>
       </form>
 
       <div class="backdrop" id="backdrop"></div>
       <form id="timer-form" class="timer-form" style="display: none;">
         <h2>Set Automatic Tweet Timer</h2>
+        <button type="button" id="close-timer-form" class="close-button">&times;</button> 
         <label for="timer-toggle">Enable Timer:</label>
         <input type="checkbox" id="timer-toggle" name="timer-toggle" />
         <br />
         <label for="timer-interval">Interval (minutes):</label>
         <input type="number" id="timer-interval" name="timer-interval" min="1" placeholder="3" />
         <br />
-        <button type="button" id="start-timer-btn">Start Timer</button>
-        <button type="button" id="stop-timer-btn">Stop Timer</button>
+        <button type="button" class="start" id="start-timer-btn">Start Timer</button>
+        <button type="button" class="stop" id="stop-timer-btn">Stop Timer</button>
       </form>
       
 
@@ -95,6 +97,11 @@
 document.getElementById("backdrop").addEventListener("click", () => {
   document.getElementById("timer-form").style.display = "none";
   document.getElementById("backdrop").style.display = "none";
+
+});
+document.getElementById('close-timer-form').addEventListener('click', () => {
+  document.getElementById('timer-form').style.display = 'none';
+  document.getElementById('backdrop').style.display = 'none';
 });
 
       </script>
