@@ -61,7 +61,14 @@ async function loadPersonalData() {
     console.error("Error loading personal data:", error);
   }
 }
-
+function scrollToBottom(container) {
+  if (container) {
+    // Use a small delay to ensure content is rendered before scrolling
+    setTimeout(() => {
+      container.scrollTop = container.scrollHeight;
+    }, 50);
+  }
+}
 // Conversation History
 let conversationHistory = [];
 
@@ -131,6 +138,7 @@ async function generateResponse(userPrompt) {
 }
 
 // Event Handling
+// Event Handling
 async function handleSubmit(event) {
   event.preventDefault();
   const promptInput = document.getElementById('prompt');
@@ -139,38 +147,35 @@ async function handleSubmit(event) {
   if (!userMessage) return;
 
   // Display user message
-  chatContainer.innerHTML += createUserMessage(userMessage);
+  scrollToBottom(chatContainer);
 
   // Clear input
   promptInput.value = '';
 
-  // Add loading spinner
+  // Add AI message container with spinner
   const { container, preElement } = createAIMessageContainer();
-  chatContainer.appendChild(container);
   const loadingSpinner = document.createElement('div');
   loadingSpinner.id = 'loading-spinner';
   loadingSpinner.className = 'loading-spinner';
-  loadingSpinner.innerHTML = `
-    <span>Generating response...</span>
-  `;
-  chatContainer.appendChild(loadingSpinner);
+  loadingSpinner.innerHTML = `<span>Generating response...</span>`;
+  
+  preElement.appendChild(loadingSpinner); // Spinner inside the same AI container
+  chatContainer.appendChild(container);
 
   // Scroll to bottom to show loading spinner
-  chatContainer.scrollTop = chatContainer.scrollHeight;
+  scrollToBottom(chatContainer);
 
   // Generate AI response
   const aiResponseWords = await generateResponse(userMessage); // Now returns an array of words
 
-  // Remove loading spinner
-  chatContainer.removeChild(loadingSpinner);
+  // Remove loading spinner text but keep container for alignment
+  loadingSpinner.innerHTML = ''; 
 
   // Display AI response progressively
-
-
-  // Display words with a delay
   for (let word of aiResponseWords) {
     preElement.textContent += word + " ";
-    await new Promise(resolve => setTimeout(resolve, 100)); // 100ms delay between words
+    await new Promise(resolve => setTimeout(resolve, 100));
+    scrollToBottom(chatContainer); // 100ms delay between words
   }
 
   // Update conversation history
@@ -184,7 +189,7 @@ async function handleSubmit(event) {
   });
 
   // Scroll to bottom
-  chatContainer.scrollTop = chatContainer.scrollHeight;
+  scrollToBottom(chatContainer);
 }
 
 // Initialize Application
@@ -258,6 +263,7 @@ document.getElementById('update-keys-form').addEventListener('submit', (event) =
 });
 
 // Handle Generate and Post Tweet Button Click
+// Modify the generate tweet button event listener to display word by word
 document.getElementById('generate-tweet-btn').addEventListener('click', async () => {
   const chatContainer = document.getElementById('chat-container');
 
@@ -265,7 +271,7 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
   const { container, preElement } = createAIMessageContainer();
   chatContainer.appendChild(container);
   preElement.textContent = "Generating AI Tweet...";
-  chatContainer.scrollTop = chatContainer.scrollHeight;
+  scrollToBottom(chatContainer);
 
   try {
     // Validate required data
@@ -310,7 +316,22 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
     }
 
     const tweetContent = fullResponse.slice(0, 280);
-    preElement.textContent = tweetContent;
+    
+    // Clear previous text
+    preElement.textContent = '';
+
+    // Word-by-word display
+    async function displayWordByWord(text) {
+      const words = text.split(/\s+/); // Split into words
+      for (let i = 0; i < words.length; i++) {
+        preElement.textContent += (i > 0 ? ' ' : '') + words[i];
+        await new Promise(resolve => setTimeout(resolve, 100));
+        scrollToBottom(chatContainer); // 200ms between each word
+      }
+    }
+
+    // Start word-by-word display
+    await displayWordByWord(tweetContent);
 
     // Post AI Tweet to Backend
     const response = await fetch('https://jack-jay.onrender.com/tweet', {
@@ -322,9 +343,9 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
     });
 
     if (response.ok) {
-      preElement.textContent += "\n\n(Tweet successfully posted!)";
+      await displayWordByWord("\n\n(Tweet successfully posted!)");
     } else if (response.status === 429) {
-      preElement.textContent += "\n\nDaily limit reached: You can post only 17 tweets per day.";
+      await displayWordByWord("\n\nDaily limit reached: You can post only 17 tweets per day.");
     } else {
       const errorText = await response.text();
       preElement.textContent = `Error posting tweet: ${response.statusText}. Details: ${errorText}`;
