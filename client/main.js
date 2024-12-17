@@ -335,47 +335,26 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
 
 
 let tweetTimer = null;
-
-// Start Automatic Tweet Timer
 document.getElementById('start-timer-btn').addEventListener('click', () => {
   const isTimerEnabled = document.getElementById('timer-toggle').checked;
   const intervalMinutes = parseInt(document.getElementById('timer-interval').value, 10);
-
   if (isTimerEnabled && intervalMinutes > 0) {
-    // Start a timer that generates and posts tweets automatically
-    tweetTimer = setInterval(async () => {
-      console.log('Generating tweet...');
-      const aiTweet = await generateResponse("Generate a new tweet for me.[strictly given command -> tweet within 280 characters, including spaces and punctuation.]");
-      const tweetContent = aiTweet.join(" ");
-      await postTweet(tweetContent);
+    if (tweetTimer) clearInterval(tweetTimer); // Clear any existing timer
+    tweetTimer = setInterval(() => {
+      document.getElementById('generate-tweet-btn').click();
     }, intervalMinutes * 60 * 1000); // Convert minutes to milliseconds
+    alert(`Automatic tweet timer started: Every ${intervalMinutes} minutes.`);
   } else {
-    // Stop the timer if it's already running
-    if (tweetTimer) {
-      clearInterval(tweetTimer);
-      tweetTimer = null;
-    }
+    alert('Please enable the timer and set a valid interval.');
   }
 });
-
-// Helper Function to Post Tweet
-async function postTweet(content) {
-  try {
-    const response = await fetch('https://jack-jay.onrender.com/tweet', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ tweetContent: content }),
-    });
-
-    const result = await response.json();
-    if (response.ok) {
-      console.log('Tweet posted successfully:', result);
-    } else {
-      console.error('Error posting tweet:', result);
-    }
-  } catch (error) {
-    console.error('Error posting tweet:', error);
+// Stop Automatic Tweet Timer
+document.getElementById('stop-timer-btn').addEventListener('click', () => {
+  if (tweetTimer) {
+    clearInterval(tweetTimer);
+    tweetTimer = null;
+    alert('Automatic tweet timer stopped.');
+  } else {
+    alert('No timer is running.');
   }
-}
+});
