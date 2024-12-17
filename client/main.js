@@ -103,39 +103,78 @@ function createAIMessageContainer() {
 
 // AI Response Generation
 async function generateResponse(userPrompt) {
+  // Helper functions to format different data types
+  const formatTweets = (tweets) =>
+    tweets.map(
+      (t) =>
+        `Author: ${t.Author}, Type: ${t.Type}, Text: ${t.TweetText}, CreatedAt: ${t.CreatedAt}, Media: ${t.Media}`
+    ).join(" | ");
+
+  const formatFacebookPosts = (posts) =>
+    posts.map(
+      (p) =>
+        `Author: ${p.Author}, Content: ${p.Content}, PostedAt: ${p.PostedAt}`
+    ).join(" | ");
+
+  const formatLinkedInPosts = (posts) =>
+    posts.map((p) => p.postText).join(" | ");
+
+  const formatConversationHistory = (history) =>
+    history.map((h) => `${h.role}: ${h.content}`).join("\n");
+
+  // Build the complete context
   const context = `
     Persona Details:
     Name: ${PERSON.name}
-
     Personal Background:
     ${personalData.biodata}
 
-    Recent Social Media Context:
-    Tweets: ${personalData.tweets.map(t => `Author: ${t.Author}, Type: ${t.Type}, TweetText: ${t.TweetText}, CreatedAt: ${t.CreatedAt}, Media: ${t.Media}`).join(' | ')}
-
-    Facebook Posts: ${personalData.facebookPosts.map(p => `Author: ${p.Author}, Content: ${p.Content}, PostedAt: ${p.PostedAt}`).join(' | ')}
-
-    LinkedIn Posts: ${personalData.linkedinPosts.map(p => p.postText).join(' | ')}
+    Social Media Context:
+    Tweets -> ${formatTweets(personalData.tweets)}
+    Facebook Posts -> ${formatFacebookPosts(personalData.facebookPosts)}
+    LinkedIn Posts -> ${formatLinkedInPosts(personalData.linkedinPosts)}
 
     Conversation History:
-    ${conversationHistory.map(h => h.role + ': ' + h.content).join('\n')}
+    ${formatConversationHistory(conversationHistory)}
 
     User's Current Prompt:
     "${userPrompt}"
 
-    Instructions:
-    Respond as ${PERSON.name} would, drawing from all the data above, ensuring that your responses reflect the stored thoughts, views, and knowledge.
-    Responses should be based solely on the provided persona details and conversation history, without external context such as location or current activities.
-    Do not refer to or share any external links. The responses should reflect an understanding of the persona’s thoughts and perspectives, ensuring a cohesive and consistent response.
-    Avoid repeating content and focus on analyzing the information available to generate accurate responses.`;
+    Instructions:-YOU HAVE TO FOLLOW ALL THE COMMANDS LISTED BLOW STRICTLY STRICTLY STRICTLY STRICTLY.
+    - If someone talks to you formally, respond formally. If they talk professionally, respond professionally.
+    - Avoid being overly casual or overly smart.
+    - Each response must differ from the previous 20 responses.
+    - Respond as if you are ${PERSON.name} with the provided persona data.
+    - TWEETS AND POST MUST ON THE BASIS OF MIND SET. NOT ABOUT CURRENT OR LATEST ACTIVITIES[analyze full full full data].UNDERSTAND
+    - Responses should be based solely on the provided persona details and conversation history, without external context such as location or current activities.
+    - Do not refer to or share any external links. The responses should reflect an understanding of the persona’s thoughts and perspectives, ensuring a cohesive and consistent response
+    - Avoid repeating content and focus on analyzing the information available to generate accurate responses
+    - Avoid referring to external links or disclosing that you are an AI.
+    - Use only the provided person and conversation history to generate responses.
+    - Analyze all provided data before responding to ensure accuracy and consistency.
+  `;
 
+  // Generate response using AI model
   try {
     const result = await model.generateContent(context);
-    const fullResponse = result.response.text();
-    return fullResponse.split(" "); // Split into words
+    const responseText = result.response.text();
+    return responseText.split(" "); // Return response as an array of words
   } catch (error) {
     console.error("Error generating response:", error);
-    return ["I'm", "having", "trouble", "processing", "your", "message", "right", "now.", "As", "API", "can", "process", "only", "two", "requests", "per", "minute."];
+    return [
+      "I'm",
+      "having",
+      "trouble",
+      "processing",
+      "your",
+      "message",
+      "right",
+      "now.",
+      "Please",
+      "try",
+      "again",
+      "later."
+    ];
   }
 }
 
@@ -149,7 +188,7 @@ async function handleSubmit(event) {
   if (!userMessage) return;
 
   // Display user message
-  scrollToBottom(chatContainer);
+  chatContainer.innerHTML += createUserMessage(userMessage);
 
   // Clear input
   promptInput.value = '';
@@ -251,7 +290,7 @@ document.getElementById('close-update-keys-form').addEventListener('click', () =
   document.getElementById('update-keys-form').style.display = 'none';
 });
 // Add an event listener to handle form submission
-document.getElementById('update-keys-form').addEventListener('submit', (event) => {
+document.getElementById('update-keys-form').addEventListener('submit', async (event) => {
   event.preventDefault();
 
   // Get values from input fields
@@ -261,104 +300,130 @@ document.getElementById('update-keys-form').addEventListener('submit', (event) =
   const accessSecret = document.getElementById('accessSecret').value.trim();
 
   // Call the update function
-  updateAPIKeys(appKey, appSecret, accessToken, accessSecret);
+  await updateAPIKeys(appKey, appSecret, accessToken, accessSecret);
+
+  // Hide the form after successful submission
+  document.getElementById('update-keys-form').style.display = 'none';
 });
+
 
 // Handle Generate and Post Tweet Button Click
 // Modify the generate tweet button event listener to display word by word
-document.getElementById('generate-tweet-btn').addEventListener('click', async () => {
-  const chatContainer = document.getElementById('chat-container');
+document.getElementById("generate-tweet-btn").addEventListener("click", async () => {
+  const chatContainer = document.getElementById("chat-container");
 
-  // Create AI message container for loading state
-  const { container, preElement } = createAIMessageContainer();
-  chatContainer.appendChild(container);
-  preElement.textContent = "Generating AI Tweet...";
-  scrollToBottom(chatContainer);
+  // Helper function to create a loading message container
+  const createLoadingState = (message) => {
+    const { container, preElement } = createAIMessageContainer();
+    chatContainer.appendChild(container);
+    preElement.textContent = message;
+    scrollToBottom(chatContainer);
+    return preElement;
+  };
+
+  // Helper functions to format social media data
+  const formatTweets = (tweets) =>
+    tweets
+      .map(
+        (t) =>
+          `Author: ${t.Author}, Type: ${t.Type}, Text: ${t.TweetText}, CreatedAt: ${t.CreatedAt}, Media: ${t.Media}`
+      )
+      .join(" | ");
+
+  const formatFacebookPosts = (posts) =>
+    posts
+      .map(
+        (p) =>
+          `Author: ${p.Author}, Content: ${p.Content}, PostedAt: ${p.PostedAt}`
+      )
+      .join(" | ");
+
+  const formatLinkedInPosts = (posts) =>
+    posts.map((p) => p.postText).join(" | ");
+
+  const formatConversationHistory = (history) =>
+    history.map((h) => `${h.role}: ${h.content}`).join("\n");
+
+  // Helper function to display text word by word
+  const displayWordByWord = async (text, preElement) => {
+    const words = text.split(/\s+/); // Split into words
+    for (let i = 0; i < words.length; i++) {
+      preElement.textContent += (i > 0 ? " " : "") + words[i];
+      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between words
+      scrollToBottom(chatContainer);
+    }
+  };
+
+  // Create a loading state
+  const preElement = createLoadingState("Generating AI Tweet...");
 
   try {
-    // Validate required data
+    // Validate essential data
     if (!PERSON || !PERSON.name || !personalData) {
       throw new Error("Missing required persona or personal data.");
     }
 
-    const aiTweet = await model.generateContent(`
-      Persona Details:
-      Name: ${PERSON.name}
+    // Build the context
+    const context = `
+    Personal Background:
+    ${personalData.biodata}
 
-      Personal Background:
-      ${personalData.biodata || "No biodata available."}
+    Social Media Context:
+    Tweets -> ${formatTweets(personalData.tweets)}
+    Facebook Posts -> ${formatFacebookPosts(personalData.facebookPosts)}
+    LinkedIn Posts -> ${formatLinkedInPosts(personalData.linkedinPosts)}
 
-      Recent Social Media Context:
-      Tweets: ${personalData.tweets?.map(t => `Author: ${t.Author}, Type: ${t.Type}, TweetText: ${t.TweetText}, CreatedAt: ${t.CreatedAt}, Media: ${t.Media}`).join(' | ') || "None"}
+    Conversation History:
+    ${formatConversationHistory(conversationHistory)}
 
-      Facebook Posts: ${personalData.facebookPosts?.map(p => `Author: ${p.Author}, Content: ${p.Content}, PostedAt: ${p.PostedAt}`).join(' | ') || "None"}
+    Instructions:-YOU HAVE TO FOLLOW ALL THE COMMANDS LISTED BLOW STRICTLY STRICTLY STRICTLY STRICTLY.
+    you have to reply with tweet only nothing else
+    "Generate an utterly unique tweet with zero previous content similarity.
+    "Generate an utterly unique tweet with zero previous content similarity.
+    "Generate an utterly unique tweet with zero previous content similarity.
+    - Generate one Tweet ,MUST be less than 280 words [MUST MUST MUST]
+    - TWEETS AND POST MUST ON THE BASIS of personality and style of the data that is shared with you. NOT ABOUT CURRENT OR LATEST ACTIVITIES[analyze full full full data].UNDERSTAND
+    - Do not refer to or share any external links. The responses should reflect an understanding of the persona’s thoughts and perspectives, ensuring a cohesive and consistent response
+    - Avoid repeating content and focus on analyzing the information available to generate accurate responses
+    - Avoid referring to external links or disclosing that you are an AI.
+    - Use only the provided person and conversation history to generate responses.
+    - Analyze all provided data before responding to ensure accuracy and consistency.
+  `;
 
-      LinkedIn Posts: ${personalData.linkedinPosts?.map(p => p.postText).join(' | ') || "None"}
+    // Generate tweet using AI model
+    const aiTweet = await model.generateContent(context);
+    const responseText = await aiTweet.response.text();
+    if (!responseText) throw new Error("Generated content is empty.");
 
-      Conversation History:
-      ${conversationHistory?.map(h => h.role + ': ' + h.content).join('\n') || "None"}
+    const tweetContent = responseText.slice(0, 280); // Ensure character limit
 
-      Instructions:
-      Generate a tweet for ${PERSON.name} that:
-      1. Must be less than 280 characters (including spaces and punctuation).
-      2. Captures the persona's unique thoughts, emotions, and perspectives.
-      3. Avoids describing current location, activities, or events.
-      4. Focuses on meaningful insights, personal reflections, or broader views.
-      5. Is emotional and thought-provoking, with no repetition of previous content.
-      6. Aligns with the persona's values, experiences, and past social media activity.
-    `);
+    // Clear loading text and display tweet content word by word
+    preElement.textContent = "";
+    await displayWordByWord(tweetContent, preElement);
 
-    if (!aiTweet || !aiTweet.response) {
-      throw new Error("AI response is invalid.");
-    }
-
-    const fullResponse = await aiTweet.response.text();
-    if (!fullResponse || fullResponse.length === 0) {
-      throw new Error("Generated content is empty.");
-    }
-
-    const tweetContent = fullResponse.slice(0, 280);
-    
-    // Clear previous text
-    preElement.textContent = '';
-
-    // Word-by-word display
-    async function displayWordByWord(text) {
-      const words = text.split(/\s+/); // Split into words
-      for (let i = 0; i < words.length; i++) {
-        preElement.textContent += (i > 0 ? ' ' : '') + words[i];
-        await new Promise(resolve => setTimeout(resolve, 100));
-        scrollToBottom(chatContainer); // 200ms between each word
-      }
-    }
-
-    // Start word-by-word display
-    await displayWordByWord(tweetContent);
-
-    // Post AI Tweet to Backend
-    const response = await fetch('https://jack-jay.onrender.com/tweet', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    // Post tweet to the backend
+    const response = await fetch("https://jack-jay.onrender.com/tweet", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ tweetContent }),
     });
 
     if (response.ok) {
-      await displayWordByWord("\n\n(Tweet successfully posted!)");
+      await displayWordByWord("\n\n(Tweet successfully posted!)", preElement);
     } else if (response.status === 429) {
-      await displayWordByWord("\n\nDaily limit reached: You can post only 17 tweets per day.");
+      await displayWordByWord("\n\nDaily limit reached: You can post only 17 tweets per day.", preElement);
     } else {
       const errorText = await response.text();
       preElement.textContent = `Error posting tweet: ${response.statusText}. Details: ${errorText}`;
     }
   } catch (error) {
     console.error("Error generating or posting tweet:", error);
-    preElement.textContent = "An error occurred: " + error.message;
+    preElement.textContent += "An error occurred: " + error.message;
   } finally {
     scrollToBottom(chatContainer); // Ensure UI is updated
   }
 });
+
 
 
 
