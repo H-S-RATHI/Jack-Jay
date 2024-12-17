@@ -50,6 +50,15 @@ let personalData = {
   biodata: ""
 };
 
+function scrollToBottom(container) {
+  if (container) {
+    // Use a small delay to ensure content is rendered before scrolling
+    setTimeout(() => {
+      container.scrollTop = container.scrollHeight;
+    }, 50);
+  }
+}
+
 // Load All Personal Data
 async function loadPersonalData() {
   try {
@@ -61,14 +70,7 @@ async function loadPersonalData() {
     console.error("Error loading personal data:", error);
   }
 }
-function scrollToBottom(container) {
-  if (container) {
-    // Use a small delay to ensure content is rendered before scrolling
-    setTimeout(() => {
-      container.scrollTop = container.scrollHeight;
-    }, 50);
-  }
-}
+
 // Conversation History
 let conversationHistory = [];
 
@@ -354,7 +356,7 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
     console.error("Error generating or posting tweet:", error);
     preElement.textContent = "An error occurred: " + error.message;
   } finally {
-    chatContainer.scrollTop = chatContainer.scrollHeight; // Ensure UI is updated
+    scrollToBottom(chatContainer); // Ensure UI is updated
   }
 });
 
