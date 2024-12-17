@@ -145,6 +145,8 @@ async function handleSubmit(event) {
   promptInput.value = '';
 
   // Add loading spinner
+  const { container, preElement } = createAIMessageContainer();
+  chatContainer.appendChild(container);
   const loadingSpinner = document.createElement('div');
   loadingSpinner.id = 'loading-spinner';
   loadingSpinner.className = 'loading-spinner';
@@ -163,8 +165,7 @@ async function handleSubmit(event) {
   chatContainer.removeChild(loadingSpinner);
 
   // Display AI response progressively
-  const { container, preElement } = createAIMessageContainer();
-  chatContainer.appendChild(container);
+
 
   // Display words with a delay
   for (let word of aiResponseWords) {
@@ -320,7 +321,7 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
       body: JSON.stringify({ tweetContent }),
     });
 
-    if (response.status===200) {
+    if (response.ok) {
       preElement.textContent += "\n\n(Tweet successfully posted!)";
     } else if (response.status === 429) {
       preElement.textContent += "\n\nDaily limit reached: You can post only 17 tweets per day.";

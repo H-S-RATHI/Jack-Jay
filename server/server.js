@@ -18,7 +18,6 @@ let client = new TwitterApi({
     accessSecret: 'J5CXQJZk1RwAmYmBKLkNKMGpWxJQbn5qcTo1DVgoGjZXK',
 });
 
-
 // Root route
 app.get('/c', (req, res) => {
     res.send('Welcome to the Twitter Backend API! Use /tweet to post tweets or /update-keys to update credentials.');
@@ -37,13 +36,17 @@ app.post('/tweet', async (req, res) => {
         });
     } catch (error) {
         console.error('Error posting tweet:', error);
-        res.status(500).json({ message: 'Error posting tweet', error: error.message });
+
+        // Check for rate limiting error
+        if (error.code === 429) {
+            res.status(429).json({ message: 'Error posting tweet', error: 'Too Many Requests' });
+        } else {
+            res.status(500).json({ message: 'Error posting tweet', error: error.message });
+        }
     }
 });
 
-
-
-
+// Route to update API credentials
 app.post('/', (req, res) => {
     const { appKey, appSecret, accessToken, accessSecret } = req.body;
 
@@ -51,21 +54,20 @@ app.post('/', (req, res) => {
         return res.status(400).json({ message: 'All fields (appKey, appSecret, accessToken, accessSecret) are required.' });
     }
 
-    
     try {
-      // Properly initialize the client with Twitter API credentials
-      client = new TwitterApi({
-          appKey: appKey,       // Application key
-          appSecret: appSecret, // Application secret
-          accessToken: accessToken,   // Access token
-          accessSecret: accessSecret, // Access secret
-      });
+        // Properly initialize the client with Twitter API credentials
+        client = new TwitterApi({
+            appKey: appKey,       // Application key
+            appSecret: appSecret, // Application secret
+            accessToken: accessToken,   // Access token
+            accessSecret: accessSecret, // Access secret
+        });
         console.log('Updated Twitter API credentials:', {
-          appKey,
-          appSecret,
-          accessToken,
-          accessSecret,
-      });
+            appKey,
+            appSecret,
+            accessToken,
+            accessSecret,
+        });
         res.json({ message: 'API credentials updated successfully!' });
     } catch (error) {
         console.error('Error updating API credentials:', error);
@@ -73,9 +75,8 @@ app.post('/', (req, res) => {
     }
 });
 
+// Start the server
 const PORT = process.env.PORT || 3000; // Use the port from environment variables or default to 3000
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port http://localhost:${PORT}`);
 });
-
-
