@@ -475,7 +475,7 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
     });
 
     if (response.ok) {
-      await displayWordByWord("\n\n(Tweet successfully posted!)");
+      await displayWordByWord("\n(Tweet successfully posted!)");
     } else if (response.status === 429) {
       await displayWordByWord("\nDaily limit reached: You can post only 17 tweets per day.");
     } else {
