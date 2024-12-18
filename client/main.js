@@ -457,7 +457,7 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
       const words = text.split(/(\s+|\n)/); // Split by spaces and newlines
       for (let i = 0; i < words.length; i++) {
         preElement.textContent += words[i]; 
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 50));
         scrollToBottom(chatContainer);
       }
     }
