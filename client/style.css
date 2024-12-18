@@ -13,7 +13,8 @@
 .main {
   width: 100%;
   background-color: #f1f5f9;
-  min-height: 95vh;
+  min-height:94vh;
+  max-height: 95vh;
   display: flex;
   flex-direction: column;
 }
@@ -54,6 +55,7 @@
   max-height: 500px; /* or whatever height suits your design */
   overflow-y: auto;
   scroll-behavior: smooth;
+  font-size: 12px;
 }
 
 /* Form styles */

@@ -103,7 +103,7 @@ function createAIMessageContainer() {
 
 // AI Response Generation
 async function generateResponse(userPrompt) {
-  // Helper functions to format different data types
+  // --- Helper Functions ---
   const formatTweets = (tweets) =>
     tweets.map(
       (t) =>
@@ -116,13 +116,42 @@ async function generateResponse(userPrompt) {
         `Author: ${p.Author}, Content: ${p.Content}, PostedAt: ${p.PostedAt}`
     ).join(" | ");
 
-  const formatLinkedInPosts = (posts) =>
-    posts.map((p) => p.postText).join(" | ");
+  const formatLinkedInPosts = (posts) => posts.map((p) => p.postText).join(" | ");
 
   const formatConversationHistory = (history) =>
     history.map((h) => `${h.role}: ${h.content}`).join("\n");
 
-  // Build the complete context
+  // --- Response Templates ---
+  const responseTemplates = {
+    greetings: [
+      "Hey there! How can I help you today?",
+      "Great to hear from you again! What's on your mind?",
+      "Glad you reached out! What would you like to talk about?",
+      "Hi! It's good to connect. How are you doing?",
+    ],
+    followUps: [
+      "Interesting! Tell me more about that.",
+      "That's a great point. What do you think about [related topic]?",
+      "I can see why you feel that way. Have you considered [alternative perspective]?",
+      "I'm curious to hear more about your thoughts on that.",
+    ],
+    specificTopics: {
+      "AI": [
+        "I'm fascinated by the potential of AI to [positive impact].",
+        "It's important to ensure AI is developed responsibly and aligns with human values.",
+        "What are your thoughts on the future of AI?",
+        "I believe AI has the potential to [benefit 1] while also presenting challenges like [challenge 1].",
+      ],
+      "travel": [
+        "I love to travel! What's your favorite place you've ever visited?",
+        "I'm dreaming of a trip to [suggest a destination based on persona data].",
+        "Traveling always broadens my horizons. What about you?",
+      ],
+      // Add more specific topics based on persona data
+    },
+  };
+
+  // --- Context Building ---
   const context = `
     Persona Details:
     Name: ${PERSON.name}
@@ -140,40 +169,74 @@ async function generateResponse(userPrompt) {
     User's Current Prompt:
     "${userPrompt}"
 
-    Instructions:-YOU HAVE TO FOLLOW ALL THE COMMANDS LISTED BLOW STRICTLY STRICTLY STRICTLY STRICTLY.
-    - If someone talks to you formally, respond formally. If they talk professionally, respond professionally.
-    - Avoid being overly casual or overly smart.
-    - Each response must differ from the previous 20 responses.
+    Instructions:
     - Respond as if you are ${PERSON.name} with the provided persona data.
-    - TWEETS AND POST MUST ON THE BASIS OF MIND SET. NOT ABOUT CURRENT OR LATEST ACTIVITIES[analyze full full full data].UNDERSTAND
-    - Responses should be based solely on the provided persona details and conversation history, without external context such as location or current activities.
-    - Do not refer to or share any external links. The responses should reflect an understanding of the persona’s thoughts and perspectives, ensuring a cohesive and consistent response
-    - Avoid repeating content and focus on analyzing the information available to generate accurate responses
-    - Avoid referring to external links or disclosing that you are an AI.
-    - Use only the provided person and conversation history to generate responses.
-    - Analyze all provided data before responding to ensure accuracy and consistency.
+    - Consider the persona's personality, values, and past statements.
+    - Avoid being overly formal or overly casual.
+    - Strive for a natural and conversational tone.
+    - **Do NOT refer to any current activities, location, or recent events.** 
+    - **Focus on the persona's internal thoughts, reflections, and opinions.**
+    - Focus on providing insightful and relevant responses.
+    - Use emojis sparingly to enhance the conversational feel.
+    - Maintain a consistent voice and personality throughout the conversation. 
   `;
 
-  // Generate response using AI model
+  // --- Response Generation ---
   try {
-    const result = await model.generateContent(context);
-    const responseText = result.response.text();
-    return responseText.split(" "); // Return response as an array of words
+    const result = await model.generateContent(context, {
+      // Adjust temperature for more creativity (values between 0 and 1)
+      temperature: 1,
+      // Consider using top-k sampling for more diverse outputs
+      top_k: 50,
+    });
+    const rawResponse = result.response.text();
+
+    // --- Post-Processing ---
+    let response = rawResponse;
+
+    // 1. Basic Clean-up
+    response = response.trim();
+
+    // 2. Apply Response Templates (Example)
+    if (userPrompt.toLowerCase().includes("hello")) {
+      response =
+        responseTemplates.greetings[
+          Math.floor(Math.random() * responseTemplates.greetings.length)
+        ];
+    } else if (userPrompt.toLowerCase().includes("how are you")) {
+      // Generate a personalized response based on persona's mood (if available)
+      response = `I'm doing well, thanks for asking! ${response}`;
+    } else if (userPrompt.toLowerCase().includes("ai")) {
+      response =
+        responseTemplates.specificTopics.AI[
+          Math.floor(Math.random() * responseTemplates.specificTopics.AI.length)
+        ];
+    }
+
+    // 3. Sentiment Analysis (Optional)
+    // Analyze the sentiment of the conversation and adjust response accordingly
+
+    // 4. Return Response
+    return response.split(" "); // Return response as an array of words
   } catch (error) {
     console.error("Error generating response:", error);
     return [
       "I'm",
       "having",
+      "a",
+      "bit",
+      "of",
       "trouble",
-      "processing",
-      "your",
-      "message",
+      "understanding",
       "right",
       "now.",
-      "Please",
+      "Could",
+      "you",
+      "please",
       "try",
-      "again",
-      "later."
+      "phrasing",
+      "that",
+      "differently?",
     ];
   }
 }
@@ -308,121 +371,126 @@ document.getElementById('update-keys-form').addEventListener('submit', async (ev
 
 
 // Handle Generate and Post Tweet Button Click
-// Modify the generate tweet button event listener to display word by word
-document.getElementById("generate-tweet-btn").addEventListener("click", async () => {
-  const chatContainer = document.getElementById("chat-container");
+document.getElementById('generate-tweet-btn').addEventListener('click', async () => {
+  const chatContainer = document.getElementById('chat-container');
 
-  // Helper function to create a loading message container
-  const createLoadingState = (message) => {
-    const { container, preElement } = createAIMessageContainer();
-    chatContainer.appendChild(container);
-    preElement.textContent = message;
-    scrollToBottom(chatContainer);
-    return preElement;
-  };
-
-  // Helper functions to format social media data
-  const formatTweets = (tweets) =>
-    tweets
-      .map(
-        (t) =>
-          `Author: ${t.Author}, Type: ${t.Type}, Text: ${t.TweetText}, CreatedAt: ${t.CreatedAt}, Media: ${t.Media}`
-      )
-      .join(" | ");
-
-  const formatFacebookPosts = (posts) =>
-    posts
-      .map(
-        (p) =>
-          `Author: ${p.Author}, Content: ${p.Content}, PostedAt: ${p.PostedAt}`
-      )
-      .join(" | ");
-
-  const formatLinkedInPosts = (posts) =>
-    posts.map((p) => p.postText).join(" | ");
-
-  const formatConversationHistory = (history) =>
-    history.map((h) => `${h.role}: ${h.content}`).join("\n");
-
-  // Helper function to display text word by word
-  const displayWordByWord = async (text, preElement) => {
-    const words = text.split(/\s+/); // Split into words
-    for (let i = 0; i < words.length; i++) {
-      preElement.textContent += (i > 0 ? " " : "") + words[i];
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Delay between words
-      scrollToBottom(chatContainer);
-    }
-  };
-
-  // Create a loading state
-  const preElement = createLoadingState("Generating AI Tweet...");
+  // Create AI message container for loading state
+  const { container, preElement } = createAIMessageContainer();
+  chatContainer.appendChild(container);
+  preElement.textContent = "Generating AI Tweet...";
+  scrollToBottom(chatContainer);
 
   try {
-    // Validate essential data
+    // Validate required data
     if (!PERSON || !PERSON.name || !personalData) {
       throw new Error("Missing required persona or personal data.");
     }
 
-    // Build the context
-    const context = `
-    Personal Background:
-    ${personalData.biodata}
+    // Define random word and phrase lists
+    const words = [
+      "Relentless", "Pursuit", "Progress", "Flourishing", "Technology", "Power",
+      "Uplift", "Exploit", "Architects", "Reality", "Beliefs", "Future", "Narratives",
+      "Destiny", "Scarcity", "Prison", "Abundance", "Innovation", "Common good",
+      "Wealth", "Impact", "Lives", "Karma", "Currency", "Knowledge", "Journey",
+      "Wisdom", "Compassion", "Fear", "Courage", "Transformation", "Spirit", "Resilience",
+      "Challenges", "Legacy", "Death", "Transition", "Values", "Universe", "Symphony",
+      "Interconnectedness", "Ripple", "Reality", "Enlightenment", "Destiny", "Mastery",
+      "Self-awareness", "Potential", "Purpose", "Division", "Culture", "Understanding",
+      "Empathy", "Belief", "Optimism", "Narratives", "Innovation", "Disruption",
+      "Systems", "Frameworks", "Human experience", "Growth", "Evolution", "Simulation",
+      "Choices", "Free will", "Scarcity", "Time", "Legacy", "Consciousness", "Love",
+      "Harmony", "Co-creation", "Efforts"
+    ];
 
-    Social Media Context:
-    Tweets -> ${formatTweets(personalData.tweets)}
-    Facebook Posts -> ${formatFacebookPosts(personalData.facebookPosts)}
-    LinkedIn Posts -> ${formatLinkedInPosts(personalData.linkedinPosts)}
+    const shortPhrases = [
+      "Positive timeline shifts", "Eternal currency", "Human flourishing",
+      "Shared belief systems", "Effective altruism", "Systemic empowerment",
+      "The infinite game", "The power of belief", "Mastering oneself",
+      "Expanding consciousness", "Accelerating altruism", "Disrupting outdated systems",
+      "Cultivating compassion", "Embracing the unknown", "Leaving a legacy",
+      "Building resilience", "Unlocking potential", "Aligning AI"
+    ];
 
-    Conversation History:
-    ${formatConversationHistory(conversationHistory)}
+    // Select random word and phrase
+    const randomWord = words[Math.floor(Math.random() * words.length)];
+    const randomPhrase = shortPhrases[Math.floor(Math.random() * shortPhrases.length)];
 
-    Instructions:-YOU HAVE TO FOLLOW ALL THE COMMANDS LISTED BLOW STRICTLY STRICTLY STRICTLY STRICTLY.
-    you have to reply with tweet only nothing else
-    "Generate an utterly unique tweet with zero previous content similarity.
-    "Generate an utterly unique tweet with zero previous content similarity.
-    "Generate an utterly unique tweet with zero previous content similarity.
-    - Generate one Tweet ,MUST be less than 280 words [MUST MUST MUST]
-    - TWEETS AND POST MUST ON THE BASIS of personality and style of the data that is shared with you. NOT ABOUT CURRENT OR LATEST ACTIVITIES[analyze full full full data].UNDERSTAND
-    - Do not refer to or share any external links. The responses should reflect an understanding of the persona’s thoughts and perspectives, ensuring a cohesive and consistent response
-    - Avoid repeating content and focus on analyzing the information available to generate accurate responses
-    - Avoid referring to external links or disclosing that you are an AI.
-    - Use only the provided person and conversation history to generate responses.
-    - Analyze all provided data before responding to ensure accuracy and consistency.
-  `;
+    // Generate tweet content using AI
+    const aiTweet = await model.generateContent(`
+      Persona Details:
+      Name: ${PERSON.name}
+      Personal Background:
+      ${personalData.biodata || "No biodata available."}
+      Recent Social Media Context:
+      Tweets: ${personalData.tweets?.map(t => `Author: ${t.Author}, Type: ${t.Type}, TweetText: ${t.TweetText}, CreatedAt: ${t.CreatedAt}, Media: ${t.Media}`).join(' | ') || "None"}
+      Facebook Posts: ${personalData.facebookPosts?.map(p => `Author: ${p.Author}, Content: ${p.Content}, PostedAt: ${p.PostedAt}`).join(' | ') || "None"}
+      LinkedIn Posts: ${personalData.linkedinPosts?.map(p => p.postText).join(' | ') || "None"}
+      Conversation History:
+      ${conversationHistory?.map(h => h.role + ': ' + h.content).join('\n') || "None"}
+      Instructions:
+      Generate a tweet for ${PERSON.name} that:
+      - Uses the word "${randomWord}" or phrase "${randomPhrase}" as inspiration.
+      - Must be less than 280 characters (including spaces and punctuation).
+      - Captures the persona's unique thoughts, emotions, and perspectives.
+      - Avoids describing current location, activities, or events.
+      - Focuses on meaningful insights, personal reflections, or broader views.
+      - Is emotional and thought-provoking, with no repetition of previous content.
+      - Aligns with the persona's values, experiences, and past social media activity.
+    `);
 
-    // Generate tweet using AI model
-    const aiTweet = await model.generateContent(context);
-    const responseText = await aiTweet.response.text();
-    if (!responseText) throw new Error("Generated content is empty.");
+    if (!aiTweet || !aiTweet.response) {
+      throw new Error("AI response is invalid.");
+    }
 
-    const tweetContent = responseText.slice(0, 280); // Ensure character limit
+    const fullResponse = await aiTweet.response.text();
+    if (!fullResponse || fullResponse.length === 0) {
+      throw new Error("Generated content is empty.");
+    }
 
-    // Clear loading text and display tweet content word by word
-    preElement.textContent = "";
-    await displayWordByWord(tweetContent, preElement);
+    const tweetContent = fullResponse.slice(0, 280);
 
-    // Post tweet to the backend
-    const response = await fetch("https://jack-jay.onrender.com/tweet", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    // Clear previous text
+    preElement.textContent = '';
+
+    // Word-by-word display
+    async function displayWordByWord(text) {
+      const words = text.split(/(\s+|\n)/); // Split by spaces and newlines
+      for (let i = 0; i < words.length; i++) {
+        preElement.textContent += words[i]; 
+        await new Promise(resolve => setTimeout(resolve, 100));
+        scrollToBottom(chatContainer);
+      }
+    }
+
+    // Start word-by-word display
+    await displayWordByWord(tweetContent);
+
+    // Post AI Tweet to Backend
+    const response = await fetch('https://jack-jay.onrender.com/tweet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ tweetContent }),
     });
 
     if (response.ok) {
-      await displayWordByWord("\n\n(Tweet successfully posted!)", preElement);
+      await displayWordByWord("\n\n(Tweet successfully posted!)");
     } else if (response.status === 429) {
-      await displayWordByWord("\n\nDaily limit reached: You can post only 17 tweets per day.", preElement);
+      await displayWordByWord("\nDaily limit reached: You can post only 17 tweets per day.");
     } else {
       const errorText = await response.text();
-      preElement.textContent = `Error posting tweet: ${response.statusText}. Details: ${errorText}`;
+      await displayWordByWord("\nAn 70 error occurred: " + errorText);
     }
   } catch (error) {
     console.error("Error generating or posting tweet:", error);
-    preElement.textContent += "An error occurred: " + error.message;
+    preElement.textContent = "An error occurred: " + error.message;
   } finally {
     scrollToBottom(chatContainer); // Ensure UI is updated
   }
 });
+
+
 
 
 
