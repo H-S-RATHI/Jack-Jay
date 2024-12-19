@@ -206,11 +206,7 @@
 }
 
 .update-keys-form input {
-  width: 94%;
-  padding: 8px;
-  margin: 5px 0 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 .update-keys-form .update {
@@ -382,35 +378,31 @@
 
 .close-button {
   position: absolute;
-  top: -1px;
+  top: -21px;
   right: 0px;
   font-size: 40px;
-  background: rgb(96 255 0);
   border: none;
-  color: rgb(51, 51, 51);
+  color: rgb(0, 0, 0);
   cursor: pointer;
   border-radius: 0px 12px 0px 0px
 }
 
 .close-button:hover {
-  color: rgb(255, 255, 255);
-  background: black;
+  color: rgb(168 85 247 / var(--tw-bg-opacity))
 }
 
 .update-close-button {
   position: absolute;
-  top: -1px;
+  top: -21px;
   right: 0px;
   font-size: 40px;
-  background: rgb(96 255 0);
   border: none;
-  color: rgb(51, 51, 51);
+  color: rgb(0, 0, 0);
   cursor: pointer;
 }
 
 .update-close-button:hover {
-  color: rgb(255, 255, 255);
-  background: black;
+  color: rgb(168 85 247 / var(--tw-bg-opacity))
 }
 
 .loading-spinner span {
