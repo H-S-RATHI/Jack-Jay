@@ -1,80 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jack Jay</title>
     <link rel="stylesheet" href="style.css" />
-  </head>
-  <body class="body">
-    <main class="main">
-      <!-- Header -->
-      <header class="header">
-        <img src="jack.webp" alt="jack image" class="profile-image" />
-        <h1 class="header-title">Jack Jay</h1>
-        <button id="twitter-account-btn" class="twitter-account-btn">Twitter Account</button>
-        <button id="generate-tweet-btn" class="tweet-button">Generate & Post AI Tweet</button>
-        <button id="set-timer-btn" class="timer-button">Set Timer for Automatic Tweet</button>
-      </header>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <main class="w-full max-w-6xl bg-white rounded-lg shadow-xl overflow-hidden">
+        <header class="bg-gray-800 text-white p-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <img src="jack.webp" alt="Jack Jay" class="w-12 h-12 rounded-full">
+                <h1 class="text-2xl font-bold">Jack Jay</h1>
+            </div>
+            <div class="space-x-2">
+                <button id="twitter-account-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Twitter Account
+                </button>
+                <button id="generate-tweet-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                    Generate & Post AI Tweet
+                </button>
+                <button id="set-timer-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">
+                    Set Timer
+                </button>
+            </div>
+        </header>
 
-      <!-- Chat Box -->
-      <div class="chat-box">
-        <!-- Chat area -->
-        <div class="chat-container" id="chat-container"></div>
-      </div>
+        <div class="chat-box p-4 h-96 overflow-y-auto" id="chat-container"></div>
 
-      <!-- Prompt Form -->
-      <form action="" method="post" class="chat-form" id="chat-form">
-        <div class="input-container">
-          <textarea
-            name="prompt"
-            id="prompt"
-            cols="30"
-            rows="4"
-            class="chat-input"
-            placeholder="Enter message here..."
-          ></textarea>
-          <button type="submit" class="send-button">Send</button>
-        </div>
-      </form>
+        <form id="chat-form" class="p-4 border-t border-gray-200">
+            <div class="flex space-x-2">
+                <textarea id="prompt" name="prompt" rows="3" class="flex-grow p-2 border rounded-lg resize-none" placeholder="Enter message here..."></textarea>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Send</button>
+            </div>
+        </form>
 
-      <!-- Hidden Update Keys Form -->
-      <form id="update-keys-form" class="update-keys-form">
-        <h2>Update API Credentials</h2>
-        <button type="button" id="close-update-keys-form" class="update-close-button">&times;</button>
-        <label for="appKey">App Key:</label>
-        <input type="text" id="appKey" name="appKey" required />
-        <br />
-        <label for="appSecret">App Secret:</label>
-        <input type="text" id="appSecret" name="appSecret" required />
-        <br />
-        <label for="accessToken">Access Token:</label>
-        <input type="text" id="accessToken" name="accessToken" required />
-        <br />
-        <label for="accessSecret">Access Secret:</label>
-        <input type="text" id="accessSecret" name="accessSecret" required />
-        <br />
-        <button type="submit" class="update">Update API Keys</button>
-      </form>
+        <div id="backdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden"></div>
 
-      <div class="backdrop" id="backdrop"></div>
-      <form id="timer-form" class="timer-form" style="display: none;">
-        <h2>Set Automatic Tweet Timer</h2>
-        <button type="button" id="close-timer-form" class="close-button">&times;</button> 
-        <label for="timer-toggle">Enable Timer:</label>
-        <input type="checkbox" id="timer-toggle" name="timer-toggle" />
-        <br />
-        <label for="timer-interval">Interval (minutes):</label>
-        <input type="number" id="timer-interval" name="timer-interval" min="1" placeholder="3" />
-        <br />
-        <button type="button" class="start" id="start-timer-btn">Start Timer</button>
-        <button type="button" class="stop" id="stop-timer-btn">Stop Timer</button>
-      </form>
-      
+        <form id="update-keys-form" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-xl z-50">
+            <h2 class="text-xl font-bold mb-4">Update API Credentials</h2>
+            <button type="button" id="close-update-keys-form" class="absolute top-2 right-2 text-gray-600 hover:text-gray-800">&times;</button>
+            <div class="space-y-4">
+                <div>
+                    <label for="appKey" class="block text-sm font-medium text-gray-700">App Key:</label>
+                    <input type="text" id="appKey" name="appKey" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="appSecret" class="block text-sm font-medium text-gray-700">App Secret:</label>
+                    <input type="text" id="appSecret" name="appSecret" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="accessToken" class="block text-sm font-medium text-gray-700">Access Token:</label>
+                    <input type="text" id="accessToken" name="accessToken" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="accessSecret" class="block text-sm font-medium text-gray-700">Access Secret:</label>
+                    <input type="text" id="accessSecret" name="accessSecret" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+            </div>
+            <button type="submit" class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Update API Keys</button>
+        </form>
 
-      <script type="module" src="/main.js"></script>
-      <script>
+        <form id="timer-form" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-xl z-50">
+            <h2 class="text-xl font-bold mb-4">Set Automatic Tweet Timer</h2>
+            <button type="button" id="close-timer-form" class="absolute top-2 right-2 text-gray-600 hover:text-gray-800">&times;</button>
+            <div class="space-y-4">
+                <div class="flex items-center">
+                    <input type="checkbox" id="timer-toggle" name="timer-toggle" class="mr-2">
+                    <label for="timer-toggle" class="text-sm font-medium text-gray-700">Enable Timer</label>
+                </div>
+                <div>
+                    <label for="timer-interval" class="block text-sm font-medium text-gray-700">Interval (minutes):</label>
+                    <input type="number" id="timer-interval" name="timer-interval" min="1" placeholder="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+            </div>
+            <div class="mt-4 flex justify-between">
+                <button type="button" id="start-timer-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Start Timer</button>
+                <button type="button" id="stop-timer-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Stop Timer</button>
+            </div>
+        </form>
+    </main>
+
+    <script type="module" src="/main.js"></script>
+    <script>
         // JavaScript to toggle forms visibility
         document.getElementById("twitter-account-btn").addEventListener("click", () => {
           const form = document.getElementById("update-keys-form");
@@ -105,6 +115,6 @@ document.getElementById('close-timer-form').addEventListener('click', () => {
 });
 
       </script>
-    </main>
-  </body>
+</body>
 </html>
+

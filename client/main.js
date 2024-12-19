@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', initApp);
 // Function to update API keys
 async function updateAPIKeys(appKey, appSecret, accessToken, accessSecret) {
   try {
-    const response = await fetch('https://jack-jay.onrender.com', {
+    const response = await fetch('http://localhost:3000', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -466,7 +466,7 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
     await displayWordByWord(tweetContent);
 
     // Post AI Tweet to Backend
-    const response = await fetch('https://jack-jay.onrender.com/tweet', {
+    const response = await fetch('http://localhost:3000/tweet', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -532,3 +532,111 @@ document.getElementById('stop-timer-btn').addEventListener('click', () => {
     alert('No timer is running.');
   }
 });
+
+
+
+
+
+
+// Frontend Code
+async function getLastDateFromCSV(filePath) {
+  try {
+      const response = await fetch(filePath); // Fetch the file
+      const text = await response.text();    // Get the file as text
+
+      return new Promise((resolve, reject) => {
+          Papa.parse(text, {
+              header: true,
+              skipEmptyLines: true,
+              complete: (results) => {
+                  console.log('Parsed Results:', results); // Debug parsed data
+                  const rows = results.data;
+
+                  if (!rows || rows.length === 0) {
+                      reject(new Error('CSV file is empty or invalid'));
+                      return;
+                  }
+
+                  const lastRow = rows[rows.length - 1];
+                  let lastDate = lastRow?.['CreatedAt'] || null;
+
+                  if (lastDate) {
+                      // Validate and fix invalid date formats
+                      lastDate = fixInvalidDate(lastDate);
+
+                      if (isValidDate(lastDate)) {
+                          resolve(lastDate);
+                      } else {
+                          reject(new Error('Invalid date format in CSV'));
+                      }
+                  } else {
+                      reject(new Error('CreatedAt field is missing or null'));
+                  }
+              },
+              error: (error) => reject(error),
+          });
+      });
+  } catch (error) {
+      console.error('Error loading CSV file:', error);
+      throw error;
+  }
+}
+
+// Helper function to fix invalid date formats
+function fixInvalidDate(dateString) {
+  // Fix invalid seconds (e.g., "19:18:99" -> "19:18:59")
+  return dateString.replace(/(\d{2}):(\d{2}):([6-9][0-9])$/, '$1:$2:59');
+}
+
+// Helper function to check if a date string is valid
+function isValidDate(dateString) {
+  const date = new Date(dateString);
+  return !isNaN(date.getTime());
+}
+
+
+
+let lastDate;
+try {
+  lastDate = await getLastDateFromCSV("/tweets.csv");
+  console.log('Extracted lastDate:', lastDate);
+} catch (error) {
+  console.error('Error fetching lastDate from CSV:', error);
+  lastDate = null; // Fallback if CSV is empty or invalid
+}
+
+async function fetchNewTweets(lastDate) {
+  const username = "jackjayio"; // Replace with the desired username
+  if (!lastDate) {
+      console.warn('No valid lastDate provided, fetching all tweets.');
+      return; // Handle no `lastDate` case if needed
+  }
+  try {
+      const response = await fetch(`http://localhost:3000/fetch-tweets?lastDate=${encodeURIComponent(lastDate)}&username=${encodeURIComponent(username)}`);
+      console.log('Fetch request URL:', `http://localhost:3000/fetch-tweets?lastDate=${encodeURIComponent(lastDate)}&username=${encodeURIComponent(username)}`);
+      const data = await response.json();
+      if (data.tweets && data.tweets.length > 0) {
+          appendToCSV(data.tweets);
+      } else {
+          console.log('No tweets returned by the backend.');
+      }
+  } catch (error) {
+      console.error('Error fetching tweets:', error);
+  }
+}
+
+
+fetchNewTweets(lastDate);
+
+function appendToCSV(newTweets) {
+  const csvContent = newTweets
+      .map((tweet) => `${tweet.TweetText},${tweet.Type},${tweet.CreatedAt},${tweet.Media}`)
+      .join('\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+  // Use FileSaver.js or similar library to save the appended content
+  saveAs(blob, 'tweet.csv', { append: true });
+}
+
+
