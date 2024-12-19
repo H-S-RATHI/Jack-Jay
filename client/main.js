@@ -596,14 +596,7 @@ function isValidDate(dateString) {
 
 
 
-let lastDate;
-try {
-  lastDate = await getLastDateFromCSV("/tweets.csv");
-  console.log('Extracted lastDate:', lastDate);
-} catch (error) {
-  console.error('Error fetching lastDate from CSV:', error);
-  lastDate = null; // Fallback if CSV is empty or invalid
-}
+
 
 async function fetchNewTweets(lastDate) {
   const username = "jackjayio"; // Replace with the desired username
