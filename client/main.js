@@ -59,10 +59,19 @@ function scrollToBottom(container) {
   }
 }
 
-// Load All Personal Data
+// Load All Personal Data from MongoDB
 async function loadPersonalData() {
   try {
-    personalData.tweets = await loadCSV('/tweets.csv');
+    // Fetch tweets from the backend API that retrieves data from MongoDB
+    const tweetsResponse = await fetch("http://127.0.0.1:3000/get_tweets");
+    if (!tweetsResponse.ok) {
+      console.error("Failed to fetch tweets from MongoDB");
+      return;
+    }
+    const tweetsData = await tweetsResponse.json();
+    personalData.tweets = tweetsData;  // Store tweets data in personalData
+
+    // You can also load other data (facebook.csv, linkedin.csv, biodata.txt) here if needed
     personalData.facebookPosts = await loadCSV('/facebook.csv');
     personalData.linkedinPosts = await loadCSV('/linkedin.csv');
     personalData.biodata = await loadText('/biodata.txt');
@@ -466,7 +475,7 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
     await displayWordByWord(tweetContent);
 
     // Post AI Tweet to Backend
-    const response = await fetch('http://localhost:3000/tweet', {
+    const response = await fetch('http://127.0.0.1:3000/tweet', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -538,98 +547,62 @@ document.getElementById('stop-timer-btn').addEventListener('click', () => {
 
 
 
-// Frontend Code
-async function getLastDateFromCSV(filePath) {
-  try {
-      const response = await fetch(filePath); // Fetch the file
-      const text = await response.text();    // Get the file as text
-
-      return new Promise((resolve, reject) => {
-          Papa.parse(text, {
-              header: true,
-              skipEmptyLines: true,
-              complete: (results) => {
-                  console.log('Parsed Results:', results); // Debug parsed data
-                  const rows = results.data;
-
-                  if (!rows || rows.length === 0) {
-                      reject(new Error('CSV file is empty or invalid'));
-                      return;
-                  }
-
-                  const lastRow = rows[rows.length - 1];
-                  let lastDate = lastRow?.['CreatedAt'] || null;
-
-                  if (lastDate) {
-                      // Validate and fix invalid date formats
-                      lastDate = fixInvalidDate(lastDate);
-
-                      if (isValidDate(lastDate)) {
-                          resolve(lastDate);
-                      } else {
-                          reject(new Error('Invalid date format in CSV'));
-                      }
-                  } else {
-                      reject(new Error('CreatedAt field is missing or null'));
-                  }
-              },
-              error: (error) => reject(error),
-          });
-      });
-  } catch (error) {
-      console.error('Error loading CSV file:', error);
-      throw error;
-  }
-}
-
-// Helper function to fix invalid date formats
-function fixInvalidDate(dateString) {
-  // Fix invalid seconds (e.g., "19:18:99" -> "19:18:59")
-  return dateString.replace(/(\d{2}):(\d{2}):([6-9][0-9])$/, '$1:$2:59');
-}
-
-// Helper function to check if a date string is valid
-function isValidDate(dateString) {
-  const date = new Date(dateString);
-  return !isNaN(date.getTime());
-}
-
-
-
-
-
+// Function to fetch new tweets from the backend
 async function fetchNewTweets(lastDate) {
   const username = "jackjayio"; // Replace with the desired username
+
   if (!lastDate) {
-      console.warn('No valid lastDate provided, fetching all tweets.');
-      return; // Handle no `lastDate` case if needed
+    console.warn('No valid lastDate provided, fetching all tweets.');
+    return; // Handle no `lastDate` case if needed
   }
+
   try {
-      const response = await fetch(`http://localhost:3000/fetch-tweets?lastDate=${encodeURIComponent(lastDate)}&username=${encodeURIComponent(username)}`);
-      console.log('Fetch request URL:', `http://localhost:3000/fetch-tweets?lastDate=${encodeURIComponent(lastDate)}&username=${encodeURIComponent(username)}`);
-      const data = await response.json();
-      if (data.tweets && data.tweets.length > 0) {
-          appendToCSV(data.tweets);
-      } else {
-          console.log('No tweets returned by the backend.');
-      }
+    const response = await fetch('http://127.0.0.1:3000/fetch_and_append_tweet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, last_date: lastDate }),
+    });
+
+    const data = await response.json();
+    console.log('Backend response:', data);
+
+    // Check if data is an array and contains tweets
+    if (Array.isArray(data) && data.length > 0) {
+      alert('Tweets.csv is updated with new tweets!'); // Notify the user
+    } else {
+      alert('No new tweets received.'); // Notify the user if no tweets are found
+    }
   } catch (error) {
-      console.error('Error fetching tweets:', error);
+    console.error('Error fetching tweets:', error);
+    alert('An error occurred while fetching tweets. Please try again.');
   }
 }
 
+// Event listener for the "Update Tweets" button
+document.getElementById('update-tweets').addEventListener('click', async () => {
+  try {
+    // Load personal data (tweets from MongoDB and other data like Facebook posts, LinkedIn posts, etc.)
+    await loadPersonalData();
 
-fetchNewTweets(lastDate);
+    // Check if tweets are loaded from MongoDB
+    if (personalData.tweets.length === 0) {
+      console.error("No tweets found in MongoDB.");
+      return;
+    }
 
-function appendToCSV(newTweets) {
-  const csvContent = newTweets
-      .map((tweet) => `${tweet.TweetText},${tweet.Type},${tweet.CreatedAt},${tweet.Media}`)
-      .join('\n');
+    // Get the last tweet's creation date from the MongoDB data
+    const lastTweet = personalData.tweets[personalData.tweets.length - 1]; // Last tweet from the MongoDB data
+    const lastDate = lastTweet ? lastTweet.CreatedAt : null;
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-
-  // Use FileSaver.js or similar library to save the appended content
-  saveAs(blob, 'tweet.csv', { append: true });
-}
-
-
+    if (lastDate) {
+      console.log('Last date from MongoDB:', lastDate);
+      await fetchNewTweets(lastDate); // Fetch new tweets after the last date
+    } else {
+      console.error("No 'CreatedAt' field found in MongoDB tweets.");
+    }
+  } catch (error) {
+    console.error('Error in loading personal data or fetching new tweets:', error);
+  }
+});
