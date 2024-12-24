@@ -25,10 +25,10 @@ except Exception as e:
 
 # Initialize variables for Twitter API credentials
 credentials = {
-    "app_key": "iFuU581K9VY6Zp6PbzXFfEh9H",
-    "app_secret": "aigHnSZMO7Qkz64mXuGutAA3hWIWNezTLidQvqOtEGaSx0ikTQ",
-    "access_token": "1867777711747334144-0LsPyFNnczJDYdiKnxqe2GLQjTo1e2",
-    "access_secret": "82xnFxS1jtywirTUCtYY4Vk4pQpRKaug5NiAtYwwOjPrj",
+    "app_key": "97zDIxF3sr5zwOu12fd6hEhup",
+    "app_secret": "Br9tLYu9QUFfYSsb6J7H5PDqFGZrbzNrLhO2LoGXbArjmIxjwE",
+    "access_token": "1871446076148068352-OcwbamJCbGmIl8hu7T3rZdnT8X245R",
+    "access_secret": "9GyAH3HezGfnkz9sHXowl2ZvpJ1pgTP3klxXGS4l0VdFV",
 }
 
 def get_twitter_client():
