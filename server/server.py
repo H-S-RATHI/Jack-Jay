@@ -71,7 +71,7 @@ def fetch_tweets(username, last_date):
     # Fetch tweets after the specified date
     tweets_url = f'https://api.twitter.com/2/users/{user_id}/tweets'
     params = {
-        'max_results': 5,
+        'max_results': 100,
         'start_time': convert_to_iso8601(last_date),
         'tweet.fields': 'created_at,referenced_tweets,attachments,text',
     }
@@ -164,7 +164,7 @@ def get_tweets():
         return jsonify({"error": "Error fetching tweets from the database"}), 500
 
     
-app.route("/c", methods=["GET"])
+@app.route("/c", methods=["GET"])
 def root():
     return "Welcome to the Twitter Backend API! Use /tweet to post tweets or /update-keys to update credentials."
 
