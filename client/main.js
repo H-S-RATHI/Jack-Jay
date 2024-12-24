@@ -63,7 +63,7 @@ function scrollToBottom(container) {
 async function loadPersonalData() {
   try {
     // Fetch tweets from the backend API that retrieves data from MongoDB
-    const tweetsResponse = await fetch("http://127.0.0.1:3000/get_tweets");
+    const tweetsResponse = await fetch("https://jack-jay.onrender.com/get_tweets");
     if (!tweetsResponse.ok) {
       console.error("Failed to fetch tweets from MongoDB");
       return;
@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', initApp);
 // Function to update API keys
 async function updateAPIKeys(appKey, appSecret, accessToken, accessSecret) {
   try {
-    const response = await fetch('http://127.0.0.1:3000/', {
+    const response = await fetch('https://jack-jay.onrender.com/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -475,7 +475,7 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
     await displayWordByWord(tweetContent);
 
     // Post AI Tweet to Backend
-    const response = await fetch('http://127.0.0.1:3000/tweet', {
+    const response = await fetch('https://jack-jay.onrender.com/tweet', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -557,7 +557,7 @@ async function fetchNewTweets(lastDate) {
   }
 
   try {
-    const response = await fetch('http://127.0.0.1:3000/fetch_and_append_tweets', {
+    const response = await fetch('https://jack-jay.onrender.com/fetch_and_append_tweets', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
