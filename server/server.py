@@ -25,10 +25,10 @@ except Exception as e:
 
 # Initialize variables for Twitter API credentials
 credentials = {
-    "app_key": "S14YjZu6EBudzltlFOjkr2eBTq",
-    "app_secret": "QfxNfVK4cB2lIXvBt9NJlJQkmw6daFVPdDdJwpudVkL4D2jYZfX",
-    "access_token": "1683885683536977920-KfQkFnu3JLRRRZ16ymluTG8zzR4tXWr",
-    "access_secret": "eX1T9DjOqhbo6WMUiqzfyygxk1nRpdKK6ykShqmrkxlMOw",
+    "app_key": "iFuU581K9VY6Zp6PbzXFfEh9H",
+    "app_secret": "aigHnSZMO7Qkz64mXuGutAA3hWIWNezTLidQvqOtEGaSx0ikTQ",
+    "access_token": "1867777711747334144-0LsPyFNnczJDYdiKnxqe2GLQjTo1e2",
+    "access_secret": "82xnFxS1jtywirTUCtYY4Vk4pQpRKaug5NiAtYwwOjPrj",
 }
 
 def get_twitter_client():
@@ -44,11 +44,6 @@ def get_twitter_client():
     except Exception as e:
         print(f"Error initializing Twitter client: {e}")
         return None
-
-def convert_to_iso8601(date_str):
-    """Convert a datetime string to ISO 8601 format required by Twitter API."""
-    dt = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
-    return dt.isoformat() + "Z"  # Add 'Z' to indicate UTC time
 
 def fetch_tweets(username, last_date):
     """Fetch tweets for a specific username after a given date."""
@@ -68,11 +63,18 @@ def fetch_tweets(username, last_date):
     user_data = user_response.json()
     user_id = user_data['data']['id']
 
+    # Convert last_date to RFC3339 format
+    try:
+        rfc3339_date = datetime.strptime(last_date, "%Y-%m-%d %H:%M:%S").isoformat() + 'Z'
+    except ValueError:
+        print(f"Invalid date format: {last_date}")
+        return []
+
     # Fetch tweets after the specified date
     tweets_url = f'https://api.twitter.com/2/users/{user_id}/tweets'
     params = {
-        'max_results': 100,
-        'start_time': convert_to_iso8601(last_date),
+        'max_results': 30,
+        'start_time': rfc3339_date,
         'tweet.fields': 'created_at,referenced_tweets,attachments,text',
     }
     tweets_response = oauth.get(tweets_url, params=params)
