@@ -9,6 +9,7 @@ const model = new GoogleGenerativeAI(API_KEY).getGenerativeModel({ model: "gemin
 const PERSON = {
   name: "Jack Jay",
   background: "",
+  personality:"good",
   communication_style: "Detailed and informative"
 };
 
@@ -166,6 +167,8 @@ async function generateResponse(userPrompt) {
     Name: ${PERSON.name}
     Personal Background:
     ${personalData.biodata}
+    personality:
+    ${personalData.personality}
 
     Social Media Context:
     Tweets -> ${formatTweets(personalData.tweets)}
@@ -430,6 +433,8 @@ document.getElementById('generate-tweet-btn').addEventListener('click', async ()
       Name: ${PERSON.name}
       Personal Background:
       ${personalData.biodata || "No biodata available."}
+      personality:
+    ${personalData.personality}
       Recent Social Media Context:
       Tweets: ${personalData.tweets?.map(t => `Author: ${t.Author}, Type: ${t.Type}, TweetText: ${t.TweetText}, CreatedAt: ${t.CreatedAt}, Media: ${t.Media}`).join(' | ') || "None"}
       Facebook Posts: ${personalData.facebookPosts?.map(p => `Author: ${p.Author}, Content: ${p.Content}, PostedAt: ${p.PostedAt}`).join(' | ') || "None"}
