@@ -566,14 +566,8 @@ async function fetchNewTweets(lastDate) {
     });
 
     const data = await response.json();
-    console.log('Backend response:', data);
+    alert('Backend response:', data);
 
-    // Check if data is an array and contains tweets
-    if (Array.isArray(data) && data.length > 0) {
-      alert('Tweets.csv is updated with new tweets!'); // Notify the user
-    } else {
-      alert('No new tweets received.'); // Notify the user if no tweets are found
-    }
   } catch (error) {
     console.error('Error fetching tweets:', error);
     alert('An error occurred while fetching tweets. Please try again.');
@@ -581,7 +575,19 @@ async function fetchNewTweets(lastDate) {
 }
 
 // Event listener for the "Update Tweets" button
-document.getElementById('update-tweets').addEventListener('click', async () => {
+document.getElementById('update-tweets').addEventListener('click', async (event) => {
+  const updateButton = event.target;
+
+  // Disable the button
+  updateButton.disabled = true;
+  updateButton.textContent = "Please wait 15 minutes...";
+
+  // Re-enable the button after 15 minutes (900000 milliseconds)
+  setTimeout(() => {
+    updateButton.disabled = false;
+    updateButton.textContent = "Update Tweets";
+  }, 900000); // 15 minutes in milliseconds
+
   try {
     // Load personal data (tweets from MongoDB and other data like Facebook posts, LinkedIn posts, etc.)
     await loadPersonalData();
